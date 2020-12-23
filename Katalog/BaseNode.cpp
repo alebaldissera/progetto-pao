@@ -1,4 +1,4 @@
-#include "basenode.h"
+#include "BaseNode.h"
 
 string BaseNode::getName()
 {

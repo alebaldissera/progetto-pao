@@ -1,6 +1,6 @@
 #ifndef CATALOGO_H
 #define CATALOGO_H
-#include "basenode.h"
+#include "BaseNode.h"
 
 class Catalogo
 {

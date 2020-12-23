@@ -1,7 +1,6 @@
 #include "DeepPtr.h"
 
-using namespace Katalog;
-
+//using namespace Katalog;
 
 template<class T>
 DeepPtr<T>::DeepPtr(T *o): obj(o) {}

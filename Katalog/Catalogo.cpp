@@ -1,4 +1,4 @@
-#include "catalogo.h"
+#include "Catalogo.h"
 
 Catalogo::Catalogo()
 {
