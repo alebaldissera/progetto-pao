@@ -1,18 +1,30 @@
 #ifndef BASENODE_H
 #define BASENODE_H
 #include <string>
+#include "Vector.h"
+#include "DeepPtr.h"
 using std::string;
+
+typedef unsigned int u_int;
+
+namespace Katalog {
+
+typedef vector<DeepPtr<BaseNode>> FilesContainer;
+typedef DeepPtr<BaseNode> BaseNodePtr;
 
 class BaseNode
 {
 private:
     string name;
-    BaseNode* file;
     long size;
     long allSize;
     string path;
+    FilesContainer files;
+
 public:
-    /**
+    BaseNode(string _name, string _path);
+    virtual ~BaseNode() = default;
+	/**
      * @brief getName: ritorna il nome del file/directory
      * @return string
      */
@@ -20,34 +32,37 @@ public:
     /**
      * @brief setName: permette la rinomina del file/directory
      */
-    void setName(string);
-    /**
+    void setName(string _nome);
+    /** 
      * @brief getFilesCount: ritorna il numero dei file presenti nella directory
      * @return int
      */
     int getFilesCount();
-    /**
+	/**
      * @brief addFile: permette di aggiungere un file alla directory
      */
-    void addFile(BaseNode*);
+	void addFile(BaseNode *insert_file);
     /**
      * @brief removeFile: permette la rimozione di un file dalla directory
-     * @return BaseNode* puntatore alla directory da cui si è eliminato il file
+     * @param insert_file file da inserire
      */
-    BaseNode* removeFile(BaseNode*);
+    BaseNodePtr removeFile(BaseNode *file_to_remove);
     /**
      * @brief getSize: ritorna la dimensione di un file/directory
-     * @return virtual long
+     * @return DeepPtr<BaseNode>
      */
-    virtual long getSize();
+    virtual long getSize() = 0;
     /**
      * @brief getAllSize: ritorna la dimensione intera della directory e dei figli sotto di essa
-     * @return virtual long
+     * @return long
      */
-    virtual long getAllSize();
-    //virtual getIcon();
-    ~BaseNode();
-    BaseNode(string);
+    virtual long getAllSize() = 0;
+    /**
+     * @brief getIcon: ritona la path ad una risorsa che specifica un'icona generica per il tipo di file
+     * @return string
+     */
+    virtual string getIcon() = 0;
 };
 
+}
 #endif // BASENODE_H

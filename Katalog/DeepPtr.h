@@ -24,9 +24,10 @@ namespace Katalog {
          * @return Riferimento al chiamante
          */
         DeepPtr& operator=(const DeepPtr &ptr);
+
         ~DeepPtr();
         /**
-         * @brief operator * Dereferenizia il puntatore
+         * @brief operator * Dereferenzia il puntatore
          * @return Riferimento all'oggetto puntato
          */
         T& operator*() const;
