@@ -133,7 +133,7 @@ public:
      * @param start Iteratore che indica il primo elemento da rimuovere
      * @param end Iteratore che indica la posizione successiva all'ultimo elemento da rimuovere
      */
-    void erase(const iterator& start, const iterator& end);
+    void erase(iterator start, iterator end);
     /**
      * @brief shrink_to_fit Prova a rimpicciolire la dimensione del vettore. Può provocare un riallocamento
      */
@@ -148,15 +148,20 @@ public:
      * @param i: Iteratore alla posizione dell'elemento da prelevare
      * @return Oggetto all'indice i
      */
-    T& operator[](const iterator& i) const;
+    T& operator[](const iterator i);
     /**
      * @brief operator [] const: Ottiene un riferimento costante all'elemento alla posizione indicata
      * @param i Iteratore alla posizione dell'elemento da prelevare
      * @return Oggetto costante all'indice i
      */
-    const T &operator[](const const_iterator& i) const;
+    const T &operator[](const const_iterator i) const;
 
-    //T& operator[](const u_int i) const;
+    /**
+     * @brief operator []: Ottiene un riferimento all'elemento alla posizione indicata
+     * @param i: Indice all'elemento da prelevare
+     * @return Oggetto all'indice i
+     */
+    //T &operator[](const u_int i) const;
 
 private:
     T* list;
@@ -169,7 +174,7 @@ private:
 };
 
 template <class T>
-vector<T>::vector(): list(new T[1]), lcapacity(1), lsize(0)
+vector<T>::vector(): list(new T[1]), lsize(0), lcapacity(1)
 {
 
 }
@@ -181,7 +186,7 @@ vector<T>::~vector()
 }
 
 template<class T>
-vector<T>::vector(const vector &v): list(new T[v.capacity]), lsize(v.size), lcapacity(v.lcapacity)
+vector<T>::vector(const vector &v): list(new T[v.lcapacity]), lsize(v.lsize), lcapacity(v.lcapacity)
 {
     for(u_int i = 0; i < lsize; i++){
         list[i] = v.list[i];
@@ -294,16 +299,16 @@ void vector<T>::insert(const T &o, vector::iterator pos)
 }
 
 template<class T>
-void vector<T>::erase(const vector::iterator &start, const vector::iterator &end)
+void vector<T>::erase(vector::iterator first, vector::iterator last)
 {
-    if(end == end()){
-        lsize = start.offset + 1;
+    if(last == end()){
+        lsize = first.offset + 1;
         return;
     }
-    for(; end != end(); ++end, ++start){
-        *start = *end;
+    for(; last != end(); ++last, ++first){
+        *first = *last;
     }
-    lsize = start.offset + 1;
+    lsize = first.offset;
 }
 
 template<class T>
@@ -322,23 +327,26 @@ void vector<T>::shrink_to_fit()
 template<class T>
 void vector<T>::append(const vector &v)
 {
-    while(lsize + v.lsize >= lcapacity) //estendo la capacità del mio vettore per permettere di inserire tutti gli elementi del secondo
-        realloc();
-    for(iterator i = begin(), j = v.begin(); j != v.end(); ++i, ++j)
-        *i = *j;
+    for(const_iterator j = v.begin(); j != v.end(); ++j)
+        push_back(*j);
 }
 
 template<class T>
-T &vector<T>::operator[](const vector::iterator &i) const
+T &vector<T>::operator[](const vector::iterator i)
 {
-    return *i;
+    return *(list + i.offset);
 }
 
 template<class T>
-const T &vector<T>::operator[](const vector::const_iterator &i) const
+const T &vector<T>::operator[](const vector::const_iterator i) const
 {
-    return *i;
+    return *(list + i.offset);
 }
+
+/*template<class T>
+T& vector<T>::operator[](const u_int i) const{
+    return list[i];
+}*/
 
 template<class T>
 void vector<T>::realloc()
@@ -358,7 +366,7 @@ vector<T>::iterator::iterator(u_int i): offset(i), start(nullptr) {}
 template<class T>
 bool vector<T>::iterator::operator==(const vector::iterator &i) const
 {
-    return start == i.start & offset == i.offset;
+    return start == i.start && offset == i.offset;
 }
 
 template<class T>
@@ -415,7 +423,7 @@ typename vector<T>::iterator vector<T>::iterator::operator--(int)
 template<class T>
 typename vector<T>::iterator vector<T>::iterator::operator-(const u_int i) const
 {
-    iterator aux((offset - i < 0) ? 0 : offset - i);
+    iterator aux(((static_cast<int>(offset) - static_cast<int>(i) < 0) ? 0 : offset - i));
     aux.start = start;
     return aux;
 }
