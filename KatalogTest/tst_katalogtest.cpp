@@ -28,6 +28,7 @@ private slots:
     void VectorAppend();
     void VectorInsert();
     void VectorErease();
+    void VectorDeepPtrDelete();
 };
 
 KatalogTest::KatalogTest() {}
@@ -164,6 +165,16 @@ void KatalogTest::VectorErease()
         verify &= (b[i] == a[i]);
     }
     QVERIFY(verify);
+}
+
+void KatalogTest::VectorDeepPtrDelete()
+{
+    using namespace Katalog;
+    typedef vector<DeepPtr<int>> container;
+    container a;
+    for(int i = 0; i < 100; i++){
+        a.push_back(new int(i));
+    }
 }
 
 QTEST_APPLESS_MAIN(KatalogTest)
