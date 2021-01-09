@@ -4,11 +4,16 @@
 
 using namespace Katalog;
 
-BaseNode::BaseNode(string _nome, string _path): name(_nome), size(-1), allSize(-1), path(_path) {}
+BaseNode::BaseNode(string _nome, string _path) : name(_nome), size(-1), allSize(-1), path(_path) {}
 
-string BaseNode::getName()
+string BaseNode::getName() const
 {
    return name;
+}
+
+string Katalog::BaseNode::getPath() const
+{
+	return path;
 }
 
 void BaseNode::setName(string _nome)
@@ -16,7 +21,7 @@ void BaseNode::setName(string _nome)
     name = _nome;
 }
 
-int BaseNode::getFilesCount()
+int BaseNode::getFilesCount() const
 {
 	return files.size();
 }

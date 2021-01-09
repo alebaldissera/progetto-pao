@@ -1,0 +1,3 @@
+
+
+1) aggiungere la lettura dei metadati dai file multimediali (da cercare come si fa!!!)

@@ -6,3 +6,5 @@ Relazione/*.log
 Relazione/*.synctex.gz
 progetto-pao.pro.user
 /KatalogTest/.qmake.stash
+
+/.vs/

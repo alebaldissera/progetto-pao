@@ -18,17 +18,22 @@ private:
     string name;
     long size;
     long allSize;
-    string path;
     FilesContainer files;
+    string path;
 
 public:
-    BaseNode(string _name, string _path);
+    BaseNode(string _name, string _path = "");
     virtual ~BaseNode() = default;
 	/**
      * @brief getName: ritorna il nome del file/directory
      * @return string
      */
-    string getName();
+    string getName() const;
+    /**
+    * @brief getPath: ritorna la path al filesystem se si tratta di una directory ritorna stringa vuota
+    * @retrun string
+    */
+    string getPath() const;
     /**
      * @brief setName: permette la rinomina del file/directory
      */
@@ -37,7 +42,7 @@ public:
      * @brief getFilesCount: ritorna il numero dei file presenti nella directory
      * @return int
      */
-    int getFilesCount();
+    int getFilesCount() const;
 	/**
      * @brief addFile: permette di aggiungere un file alla directory
      */
@@ -51,17 +56,17 @@ public:
      * @brief getSize: ritorna la dimensione di un file/directory
      * @return DeepPtr<BaseNode>
      */
-    virtual long getSize() = 0;
+    virtual long getSize() const = 0;
     /**
      * @brief getAllSize: ritorna la dimensione intera della directory e dei figli sotto di essa
      * @return long
      */
-    virtual long getAllSize() = 0;
+    virtual long getAllSize() const = 0;
     /**
      * @brief getIcon: ritona la path ad una risorsa che specifica un'icona generica per il tipo di file
      * @return string
      */
-    virtual string getIcon() = 0;
+    virtual string getIcon() const = 0;
 };
 
 }
