@@ -1,13 +1,17 @@
 #ifndef BASENODE_H
 #define BASENODE_H
+
 #include <string>
 #include "Vector.h"
 #include "DeepPtr.h"
+
 using std::string;
 
 typedef unsigned int u_int;
 
 namespace Katalog {
+
+class BaseNode; //dichiarazione incompleta per usare il typedef
 
 typedef vector<DeepPtr<BaseNode>> FilesContainer;
 typedef DeepPtr<BaseNode> BaseNodePtr;
@@ -16,10 +20,12 @@ class BaseNode
 {
 private:
     string name;
-    long size;
-    long allSize;
     FilesContainer files;
     string path;
+
+protected:
+    long size;
+    long allSize;
 
 public:
     BaseNode(string _name, string _path = "");
@@ -56,12 +62,12 @@ public:
      * @brief getSize: ritorna la dimensione di un file/directory
      * @return DeepPtr<BaseNode>
      */
-    virtual long getSize() const = 0;
+    virtual long getSize() = 0;
     /**
      * @brief getAllSize: ritorna la dimensione intera della directory e dei figli sotto di essa
      * @return long
      */
-    virtual long getAllSize() const = 0;
+    virtual long getAllSize() = 0;
     /**
      * @brief getIcon: ritona la path ad una risorsa che specifica un'icona generica per il tipo di file
      * @return string

@@ -2,7 +2,7 @@
 
 Katalog::Photo::Photo(string _name, string _path): Directory(_name, _path) {}
 
-long Katalog::Photo::getSize() const
+long Katalog::Photo::getSize()
 {
 	if (size != -1)
 		return size;
@@ -10,7 +10,12 @@ long Katalog::Photo::getSize() const
 	return size;
 }
 
-long Katalog::Photo::getAllSize() const
+long Katalog::Photo::getAllSize()
 {
 	return getSize() + Directory::getAllSize();
+}
+
+string Katalog::Photo::getIcon() const
+{
+    return "/icons/photo.img";
 }

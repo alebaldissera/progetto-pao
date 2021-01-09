@@ -12,9 +12,9 @@ namespace Katalog {
 	class Photo : public Directory {
 	public:
 		Photo(string _name, string _path);
-		long getSize() const;
-		long getAllSize() const;
-		string getImage() const;
+        long getSize() override;
+        long getAllSize() override;
+        string getIcon() const override;
 	private:
 	};
 

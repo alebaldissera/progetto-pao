@@ -4,7 +4,7 @@
 
 using namespace Katalog;
 
-BaseNode::BaseNode(string _nome, string _path) : name(_nome), size(-1), allSize(-1), path(_path) {}
+BaseNode::BaseNode(string _nome, string _path) : name(_nome), path(_path), size(-1), allSize(-1) {}
 
 string BaseNode::getName() const
 {
@@ -47,4 +47,5 @@ BaseNodePtr BaseNode::removeFile(BaseNode* file_to_remove)
 			return retPtr;
 		}
 	}
+    return BaseNodePtr(nullptr);
 }

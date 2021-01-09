@@ -12,9 +12,9 @@ namespace Katalog {
 	class Video : public Directory {
 	public:
 		Video(string _name, string _path);
-		long getSize() const;
-		long getAllSize() const;
-		string getIcon() const;
+        long getSize() override;
+        long getAllSize() override;
+        string getIcon() const override;
 	private:
 	};
 

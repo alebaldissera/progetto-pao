@@ -11,6 +11,10 @@ CONFIG += c++17
 SOURCES += \
     Catalogo.cpp \
     BaseNode.cpp \
+    Directory.cpp \
+    Photo.cpp \
+    Audio.cpp \
+    Video.cpp \
     main.cpp
 
 HEADERS += \
@@ -18,6 +22,10 @@ HEADERS += \
     Vector.h \
     Catalogo.h \
     BaseNode.h \
+    Directory.h \
+    Photo.h \
+    Audio.h \
+    Video.h
 
 
 # Default rules for deployment.

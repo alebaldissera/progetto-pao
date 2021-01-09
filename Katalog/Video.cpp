@@ -1,24 +1,16 @@
 #include "Video.h"
 
-long Katalog::getSize() const
-{
-	if (size != -1)
-		return size;
-	size = std::filesystem::file_size(getPath());
-	return size;
-}
-
 Katalog::Video::Video(string _name, string _path): Directory(_name, _path) {}
 
-long Katalog::Video::getSize() const
+long Katalog::Video::getSize()
 {
 	if (size != -1)
 		return size;
-	size = std::filesystem::file_size(path);
+    size = std::filesystem::file_size(getPath());
 	return size;
 }
 
-long Katalog::Video::getAllSize() const
+long Katalog::Video::getAllSize()
 {
 	return getSize() + Directory::getAllSize();
 }

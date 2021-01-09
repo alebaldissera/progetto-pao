@@ -2,7 +2,7 @@
 
 Katalog::Audio::Audio(string _name, string _path): Directory(_name, _path){}
 
-long Katalog::Audio::getSize() const
+long Katalog::Audio::getSize()
 {
 	if (size != -1)
 		return size;
@@ -10,7 +10,7 @@ long Katalog::Audio::getSize() const
 	return size;
 }
 
-long Katalog::Audio::getAllSize() const
+long Katalog::Audio::getAllSize()
 {
 	return getSize() + Directory::getAllSize();
 }
