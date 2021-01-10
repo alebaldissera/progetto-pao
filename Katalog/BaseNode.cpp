@@ -36,16 +36,21 @@ void BaseNode::addFile(BaseNode * insert_file)
 	files.push_back(insert_file);
 }
 
-BaseNodePtr BaseNode::removeFile(BaseNode* file_to_remove) 
+DeepPtr<BaseNode> BaseNode::removeFile(BaseNode* file_to_remove)
 {
     for (auto i = files.begin(); i != files.end(); i++)
     {   
         if (&(*files[i]) == file_to_remove)
         {
-			BaseNodePtr retPtr = files[i];
+            DeepPtr<BaseNode> retPtr = files[i];
 			files.erase(i, i + 1);
 			return retPtr;
 		}
 	}
-    return BaseNodePtr(nullptr);
+    return DeepPtr<BaseNode>(nullptr);
+}
+
+const vector<DeepPtr<BaseNode>> &BaseNode::getFiles() const
+{
+    return files;
 }

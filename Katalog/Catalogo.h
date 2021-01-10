@@ -40,7 +40,7 @@ public:
      */
     int getFileCount();
     Catalogo();
-   ~Catalogo();
+    ~Catalogo();
 };
 
 }

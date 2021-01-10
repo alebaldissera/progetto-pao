@@ -11,9 +11,10 @@ namespace Katalog {
 	class Directory : public BaseNode {
 	public:
 		Directory(string nome, string path = "");
-        long getSize() override;
-        long getAllSize() override;
+        long getSize() const override;
+        long getAllSize() const override;
         string getIcon() const override;
+        string getInfo() const override;
 
 	private:
 

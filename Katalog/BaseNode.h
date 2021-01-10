@@ -11,16 +11,13 @@ typedef unsigned int u_int;
 
 namespace Katalog {
 
-class BaseNode; //dichiarazione incompleta per usare il typedef
-
-typedef vector<DeepPtr<BaseNode>> FilesContainer;
-typedef DeepPtr<BaseNode> BaseNodePtr;
+//non si può usare il typedef con un oggetto non acora definito quando viene usato un una classe (a meno di rif e ptr), in questo caso DeepPtr
 
 class BaseNode
 {
 private:
     string name;
-    FilesContainer files;
+    vector<DeepPtr<BaseNode>> files;
     string path;
 
 protected:
@@ -57,22 +54,32 @@ public:
      * @brief removeFile: permette la rimozione di un file dalla directory
      * @param insert_file file da inserire
      */
-    BaseNodePtr removeFile(BaseNode *file_to_remove);
+    DeepPtr<BaseNode> removeFile(BaseNode *file_to_remove);
     /**
      * @brief getSize: ritorna la dimensione di un file/directory
      * @return DeepPtr<BaseNode>
      */
-    virtual long getSize() = 0;
+    virtual long getSize() const = 0;
     /**
      * @brief getAllSize: ritorna la dimensione intera della directory e dei figli sotto di essa
      * @return long
      */
-    virtual long getAllSize() = 0;
+    virtual long getAllSize() const = 0;
     /**
      * @brief getIcon: ritona la path ad una risorsa che specifica un'icona generica per il tipo di file
      * @return string
      */
     virtual string getIcon() const = 0;
+    /**
+      * @brief getFiles: ritorna un riferimento costante alla lista dei file contenuti nel nodo
+      * @return Katalog::vector<Katalog::DeepPtr<Katalog::BaseNode>>
+      */
+    const vector<DeepPtr<BaseNode>>& getFiles() const;
+    /**
+     * @brief getInfo: ritorna una stringa formattata con le informazioni del nodo
+     * @return string
+     */
+    virtual string getInfo() const = 0;
 };
 
 }
