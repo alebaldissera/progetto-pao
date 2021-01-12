@@ -14,6 +14,11 @@ Katalog::Video::Video(string _name, string _path): Directory(_name, _path)
     size = std::filesystem::file_size(getPath());
 }
 
+Katalog::Video* Katalog::Video::clone() const
+{
+    return new Video(*this);
+}
+
 long Katalog::Video::getSize() const
 {
 	return size;

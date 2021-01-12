@@ -42,14 +42,14 @@ namespace Katalog {
     DeepPtr<T>::DeepPtr(T *o): obj(o) {}
 
     template<class T>
-    DeepPtr<T>::DeepPtr(const DeepPtr &ptr): obj(new T(*(ptr.obj))) {}
+    DeepPtr<T>::DeepPtr(const DeepPtr &ptr): obj(ptr.obj->clone()) {}
 
     template<class T>
     DeepPtr<T>& DeepPtr<T>::operator=(const DeepPtr &ptr)
     {
         if(this != &ptr){
             delete obj;
-            obj = new T(*(ptr.obj));
+            obj = ptr.obj->clone();
         }
         return *this;
     }

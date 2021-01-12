@@ -1,5 +1,6 @@
 #include "Audio.h"
 #include <QMediaMetaData>
+#include <sstream>
 
 Katalog::Audio::Audio(string _name, string _path): Directory(_name, _path)
 {
@@ -10,6 +11,11 @@ Katalog::Audio::Audio(string _name, string _path): Directory(_name, _path)
     titolo = player->metaData(QMediaMetaData::Title).String;
     autore = player->metaData(QMediaMetaData::Author).String;
     size = std::filesystem::file_size(getPath());
+}
+
+Katalog::Audio* Katalog::Audio::clone() const
+{
+    return new Audio(*this);
 }
 
 long Katalog::Audio::getSize() const

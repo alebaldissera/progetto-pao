@@ -27,6 +27,11 @@ protected:
 public:
     BaseNode(string _name, string _path = "");
     virtual ~BaseNode() = default;
+    /**
+     * @brief clone: ritorna una copia della classe derivata
+     * @return puntatore alla classe derivata copiata
+     */
+    virtual BaseNode* clone() const = 0;
 	/**
      * @brief getName: ritorna il nome del file/directory
      * @return string

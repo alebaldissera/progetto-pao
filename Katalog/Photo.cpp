@@ -18,6 +18,11 @@ Katalog::Photo::Photo(string _name, string _path): Directory(_name, _path)
     size = std::filesystem::file_size(getPath());
 }
 
+Katalog::Photo* Katalog::Photo::clone() const
+{
+    return new Photo(*this);
+}
+
 long Katalog::Photo::getSize() const
 {
 	return size;
