@@ -1,6 +1,7 @@
 #ifndef CATALOGO_H
 #define CATALOGO_H
 #include "BaseNode.h"
+#include "DeepPtr.h"
 #include <regex>
 #include <iostream>
 
