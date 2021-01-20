@@ -4,20 +4,26 @@
 using namespace Katalog;
 using namespace std;
 
-Catalogo::Catalogo() : root(nullptr) {} //non sono sicuro
+Catalogo::Catalogo() : root() {} //non sono sicuro
 
-/*
+
 void Catalogo::add(string path, BaseNode* destination_dir)
 {
-    std::regex rgx("(?=\/)(.*?)(?<=\/)");
+        //std::regex rgx("(?:/)(.+)(?:/)");
+        std::regex rgx ("(?:/)(.+[a-zA-z0-9\\s]\\..+[a-zA-z0-9\\s])");
         std::smatch match;
-        if(std::regex_search(s.begin(), s.end(), match, rgx)){
-            std::cout<< match[1] << endl; //stamperà: miacartella
-            path = path.substring(match[1].end(), path.end()); //path = "/miofile.jpg"
+        //std::regex_search(path.begin(), path.end(), match, rgx)
+        if(std::regex_search(path, match, rgx)){
+            std::cout<< match[1] << std::endl; //stamperà: miacartella
+            path = path.substr(match[1].str().length(), path.length() + 1); //path = "/miofile.jpg"
         }
-        return 0;
+        else
+        {
+
+        }
+        return ;
 }
-*/
+
 
 void Catalogo::move(string path_start, string path_end)
 {
@@ -26,6 +32,7 @@ void Catalogo::move(string path_start, string path_end)
      *   idea2: controllo se esistono le due stringhe scorrendo con un for il catalogo: successivamente copio il file nel path di destinazione,
      *          ne modifico il path facendolo combaciare con la destinazione, elimino il file dal path iniziale.
      */
+     //if (path_start == root->getPath())
 
 }
 
@@ -37,5 +44,21 @@ long Catalogo::getSize()
 int Catalogo::getFileCount()
 {
     return root->getFilesCount();
+}
+
+void Catalogo::copy(string file_path)
+{
+    for (auto i = 0; i < root->getFilesCount(); i++)
+    {
+        if (root->getPath() == file_path)
+        {
+
+        }
+    }
+}
+
+const DeepPtr<BaseNode>& Catalogo::getRoot()
+{
+    return root;
 }
 

@@ -9,7 +9,7 @@ namespace Katalog{
 class Catalogo
 {
 private:
-    BaseNodePtr root;
+    DeepPtr<BaseNode> root;
 public:
     /**
      * @brief   add: aggiunge un file alla directory scelta
@@ -39,6 +39,16 @@ public:
      * @return  int
      */
     int getFileCount();
+    /**
+     * @brief copy: copia di un file in memoria
+     * @param string: path dell'oggetto da copiare in memoria
+     */
+    void copy(string);
+    /**
+     * @brief getRoot: ritorna il puntatore alla radice
+     * @return pointer alla radice
+     */
+    const DeepPtr<BaseNode>& getRoot();
     Catalogo();
     ~Catalogo();
 };
