@@ -51,6 +51,7 @@ public:
      */
     const DeepPtr<BaseNode>& getRoot();
     Catalogo();
+    Catalogo(DeepPtr<BaseNode>); //necessario per costruzione catalogo da radice
     ~Catalogo();
 };
 

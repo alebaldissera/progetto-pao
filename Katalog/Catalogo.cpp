@@ -6,6 +6,8 @@ using namespace std;
 
 Catalogo::Catalogo() : root() {} //non sono sicuro
 
+Catalogo::Catalogo(DeepPtr<BaseNode> catalog_root) : root(catalog_root) {}
+
 
 void Catalogo::add(string path, BaseNode* destination_dir)
 {
