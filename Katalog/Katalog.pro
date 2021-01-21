@@ -1,4 +1,4 @@
-QT       += core gui multimedia
+QT       += core gui multimedia xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -12,6 +12,7 @@ SOURCES += \
     Catalogo.cpp \
     BaseNode.cpp \
     Directory.cpp \
+    IOManager.cpp \
     Photo.cpp \
     Audio.cpp \
     Video.cpp \
@@ -19,6 +20,7 @@ SOURCES += \
 
 HEADERS += \
     DeepPtr.h \
+    IOManager.h \
     Vector.h \
     Catalogo.h \
     BaseNode.h \

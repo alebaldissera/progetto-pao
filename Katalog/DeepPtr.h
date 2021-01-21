@@ -36,6 +36,11 @@ namespace Katalog {
          * @return Puntatore all'oggetto
          */
         T* operator->() const;
+        /**
+         * @brief pointer ritorna un puntatore all'oggetto
+         * @return puntatore all'oggetto
+         */
+        T* pointer() const;
     };
 
     template<class T>
@@ -72,6 +77,10 @@ namespace Katalog {
         return obj;
     }
 
+    template <class T>
+    T *DeepPtr<T>::pointer() const {
+        return obj;
+    }
 };
 
 #endif // DEEPPTR_H
