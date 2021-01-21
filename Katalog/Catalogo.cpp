@@ -29,13 +29,27 @@ void Catalogo::add(string path, BaseNode* destination_dir)
 
 void Catalogo::move(string path_start, string path_end)
 {
-    /*   idea1: controllo se le due stringhe esistono: sostituisco a path_end la parte finale, così che possa puntare al file in path_start.
-     *          Successivamente elimino dal path start il nome del file appena spostato.
-     *   idea2: controllo se esistono le due stringhe scorrendo con un for il catalogo: successivamente copio il file nel path di destinazione,
-     *          ne modifico il path facendolo combaciare con la destinazione, elimino il file dal path iniziale.
+    /*  idea2: controllo se esistono le due stringhe scorrendo con un for il catalogo: successivamente copio il file nel path di destinazione,
+     *         ne modifico il path facendolo combaciare con la destinazione, elimino il file dal path iniziale.
      */
-     //if (path_start == root->getPath())
-
+     vector<DeepPtr<BaseNode>> lista_file = root->getFiles();
+     for (unsigned int i = 0; i < lista_file.size(); i++)
+     {
+        if (lista_file[i]->getPath() == path_start)
+        {
+            DeepPtr<BaseNode> file_to_move;
+            file_to_move->removeFile(&(*lista_file[i]));
+            for (unsigned int ii = i; ii < lista_file.size(); ii++)
+            {
+                if (lista_file[ii]->getPath() == path_end)
+                {
+                   lista_file[ii]->addFile(&(*file_to_move));
+                   return;
+                }
+            }
+        }
+     }
+    return;
 }
 
 long Catalogo::getSize()
@@ -50,13 +64,12 @@ int Catalogo::getFileCount()
 
 void Catalogo::copy(string file_path)
 {
-    for (auto i = 0; i < root->getFilesCount(); i++)
-    {
-        if (root->getPath() == file_path)
+    if (root->getPath() == file_path) //cosa fare se non è corretta?
         {
-
+            root->clone();
+            return;
         }
-    }
+    return;
 }
 
 const DeepPtr<BaseNode>& Catalogo::getRoot()

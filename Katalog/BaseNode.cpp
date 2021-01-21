@@ -2,7 +2,7 @@
 #include "DeepPtr.h"
 #include "Vector.h"
 
-using namespace Katalog;
+using namespace Katalog; //messo per comodità, da rimuovere una volta finito
 
 BaseNode::BaseNode(string _nome, string _path) : name(_nome), path(_path), size(-1), allSize(-1) {}
 
