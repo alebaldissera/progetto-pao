@@ -8,9 +8,9 @@ Catalogo::Catalogo() : root() {} //non sono sicuro
 
 Catalogo::Catalogo(DeepPtr<BaseNode> catalog_root) : root(catalog_root) {}
 
-
 void Catalogo::add(string path, BaseNode* destination_dir)
 {
+        vector<DeepPtr<BaseNode>> _list = root->getFiles();
         //std::regex rgx("(?:/)(.+)(?:/)");
         std::regex rgx ("(?:/)(.+[a-zA-z0-9\\s]\\..+[a-zA-z0-9\\s])");
         std::smatch match;
@@ -21,9 +21,16 @@ void Catalogo::add(string path, BaseNode* destination_dir)
         }
         else
         {
-
+            //non so cosa fare altrimenti: scorre i match?
         }
-        return ;
+        for (unsigned int i = 0; i < _list.size(); i++)
+        {
+            if(_list[i]->getPath() == path)
+            {
+                destination_dir->addFile(&(*_list[i]));
+                return;
+            }
+        }
 }
 
 
@@ -52,6 +59,21 @@ void Catalogo::move(string path_start, string path_end)
     return;
 }
 
+DeepPtr<BaseNode> Catalogo::remove(string path_remove_file)
+{
+    vector<DeepPtr<BaseNode>> lista_file = root->getFiles();
+    for (auto i = lista_file.begin(); i != lista_file.end(); i++)
+    {
+        if (lista_file[i]->getPath() == path_remove_file)
+        {
+            DeepPtr<BaseNode> retPtr = lista_file[i];
+            lista_file.erase(i, i + 1);
+            return retPtr;
+        }
+    }
+    return DeepPtr<BaseNode>(nullptr);
+}
+
 long Catalogo::getSize()
 {
    return root->getAllSize();
@@ -76,4 +98,6 @@ const DeepPtr<BaseNode>& Catalogo::getRoot()
 {
     return root;
 }
+
+
 

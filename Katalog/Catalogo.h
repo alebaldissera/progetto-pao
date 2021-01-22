@@ -12,6 +12,9 @@ class Catalogo
 private:
     DeepPtr<BaseNode> root;
 public:
+    Catalogo();
+    Catalogo(DeepPtr<BaseNode>); //necessario per costruzione catalogo da radice
+    ~Catalogo();
     /**
      * @brief   add: aggiunge un file alla directory scelta
      * @param   string: è il path del file da inserire
@@ -50,9 +53,7 @@ public:
      * @return pointer alla radice
      */
     const DeepPtr<BaseNode>& getRoot();
-    Catalogo();
-    Catalogo(DeepPtr<BaseNode>); //necessario per costruzione catalogo da radice
-    ~Catalogo();
+
 };
 
 }
