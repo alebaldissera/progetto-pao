@@ -26,7 +26,7 @@ public:
      * @return  directory da cui è stato eliminato il file
      * @param   string: path del file da rimuovere
      */
-    BaseNode* remove(std::string);
+    DeepPtr<BaseNode> remove(std::string);
     /**
      * @brief   move: permette di spostare un file da una directory all'altra
      * @param   string: path dell'oggetto da spostare
