@@ -16,7 +16,7 @@ string Katalog::BaseNode::getPath() const
 	return path;
 }
 
-void BaseNode::setName(string _nome)
+void BaseNode::setName(string &_nome)
 {
     name = _nome;
 }
@@ -53,4 +53,13 @@ DeepPtr<BaseNode> BaseNode::removeFile(BaseNode* file_to_remove)
 const vector<DeepPtr<BaseNode>> &BaseNode::getFiles() const
 {
     return files;
+}
+
+const DeepPtr<BaseNode> &BaseNode::getFileByName(std::string &filename) const
+{
+    for(auto i = files.begin(); i != files.end(); i++){
+        if( files[i] -> getName() == filename)
+            return files[i];
+    }
+    throw std::runtime_error("Non c'è un file con il nome fornito");
 }

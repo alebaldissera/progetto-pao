@@ -4,6 +4,7 @@
 #include <string>
 #include "Vector.h"
 #include "DeepPtr.h"
+#include <stdexcept>
 
 using std::string;
 
@@ -45,7 +46,7 @@ public:
     /**
      * @brief setName: permette la rinomina del file/directory
      */
-    void setName(string _nome);
+    void setName(string &_nome);
     /** 
      * @brief getFilesCount: ritorna il numero dei file presenti nella directory
      * @return int
@@ -80,6 +81,13 @@ public:
       * @return Katalog::vector<Katalog::DeepPtr<Katalog::BaseNode>>
       */
     const vector<DeepPtr<BaseNode>>& getFiles() const;
+    /**
+     * @brief getFileByName ritorna un riferiemento costante al file con il nome passato come parametro per riferimento
+     * @param filename il nome del file da cercare
+     * @return riferimento costante al file
+     * @throw std::runtime_error
+     */
+    const DeepPtr<BaseNode>& getFileByName(string &filename) const;
     /**
      * @brief getInfo: ritorna una stringa formattata con le informazioni del nodo
      * @return string
