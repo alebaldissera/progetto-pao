@@ -38,3 +38,10 @@ Katalog/release/*
 /KatalogTest/release/qmake/temp/qtvars_x64_Release.props
 /KatalogTest/release/tst_katalogtest.moc.cbt
 /KatalogTest/target_wrapper.bat
+/build-Katalog-Desktop-Debug/.gitignore
+/build-Katalog-Desktop-Debug/Audio.o
+/build-Katalog-Desktop-Debug/BaseNode.o
+/build-Katalog-Desktop-Debug/Catalogo.o
+/build-Katalog-Desktop-Debug/Directory.o
+/build-Katalog-Desktop-Debug/IOManager.o
+/build-Katalog-Desktop-Debug/Katalog

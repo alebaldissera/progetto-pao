@@ -13,6 +13,8 @@ SOURCES += \
     BaseNode.cpp \
     Directory.cpp \
     IOManager.cpp \
+    LoadingView.cpp \
+    MainWindow.cpp \
     Photo.cpp \
     Audio.cpp \
     Video.cpp \
@@ -21,6 +23,8 @@ SOURCES += \
 HEADERS += \
     DeepPtr.h \
     IOManager.h \
+    LoadingView.h \
+    MainWindow.h \
     Vector.h \
     Catalogo.h \
     BaseNode.h \
@@ -34,3 +38,8 @@ HEADERS += \
 qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
+
+DISTFILES +=
+
+RESOURCES += \
+    Resources/Resources.qrc

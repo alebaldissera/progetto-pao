@@ -58,8 +58,9 @@ const vector<DeepPtr<BaseNode>> &BaseNode::getFiles() const
 DeepPtr<BaseNode> &BaseNode::getFileByName(std::string &filename)
 {
     for(auto i = files.begin(); i != files.end(); i++){
-        if(files[i] -> getName() == filename)
+        if(files[i]->getName() == filename){
             return files[i];
+        }
     }
-    throw std::runtime_error("Non c'è un file con il nome fornito");
+    throw std::runtime_error("Il file non esiste");
 }
