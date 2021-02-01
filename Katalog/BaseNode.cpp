@@ -26,21 +26,21 @@ int BaseNode::getFilesCount() const
 	return files.size();
 }
 
-void BaseNode::addFile(BaseNode * insert_file)
+void BaseNode::addFile(DeepPtr<BaseNode> insert_file)
 {
 	for (u_int i = 0; i < files.size(); i++)
 	{
-		if (&(*files[i]) == insert_file) //penso basti ma è da controllare
+        if (&(*files[i]) == insert_file.pointer()) //penso basti ma è da controllare
 			return;
 	}
 	files.push_back(insert_file);
 }
 
-DeepPtr<BaseNode> BaseNode::removeFile(BaseNode* file_to_remove)
+DeepPtr<BaseNode> BaseNode::removeFile(DeepPtr<BaseNode> file_to_remove)
 {
     for (auto i = files.begin(); i != files.end(); i++)
     {   
-        if (&(*files[i]) == file_to_remove)
+        if (&(*files[i]) == file_to_remove.pointer())
         {
             DeepPtr<BaseNode> retPtr = files[i];
 			files.erase(i, i + 1);
@@ -55,10 +55,10 @@ const vector<DeepPtr<BaseNode>> &BaseNode::getFiles() const
     return files;
 }
 
-const DeepPtr<BaseNode> &BaseNode::getFileByName(std::string &filename) const
+DeepPtr<BaseNode> &BaseNode::getFileByName(std::string &filename)
 {
     for(auto i = files.begin(); i != files.end(); i++){
-        if( files[i] -> getName() == filename)
+        if(files[i] -> getName() == filename)
             return files[i];
     }
     throw std::runtime_error("Non c'è un file con il nome fornito");

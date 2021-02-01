@@ -4,74 +4,69 @@
 using namespace Katalog;
 using namespace std;
 
-Catalogo::Catalogo() : root() {} //non sono sicuro
+Catalogo::Catalogo() : root() {}
 
 Catalogo::Catalogo(DeepPtr<BaseNode> catalog_root) : root(catalog_root) {}
 
-void Catalogo::add(string path, BaseNode* destination_dir)
+BaseNode* Catalogo::regex_fun(string path)
 {
-        vector<DeepPtr<BaseNode>> _list = root->getFiles();
-        //std::regex rgx("(?:/)(.+)(?:/)");
-        std::regex rgx ("(?:/)(.+[a-zA-z0-9\\s]\\..+[a-zA-z0-9\\s])");
-        std::smatch match;
-        //std::regex_search(path.begin(), path.end(), match, rgx)
-        if(std::regex_search(path, match, rgx)){
-            std::cout<< match[1] << std::endl; //stamperà: miacartella
-            path = path.substr(match[1].str().length(), path.length() + 1); //path = "/miofile.jpg"
-        }
-        else
-        {
-            //non so cosa fare altrimenti: scorre i match?
-        }
-        for (unsigned int i = 0; i < _list.size(); i++)
-        {
-            if(_list[i]->getPath() == path)
-            {
-                destination_dir->addFile(&(*_list[i]));
-                return;
-            }
-        }
+    BaseNode* node = root.pointer();
+    std::regex rgx ("(?:/)([a-zA-Z0-9\\.\\s]+)");
+    std::smatch match;
+    while(std::regex_search(path, match, rgx)){
+            std::string matched = match[1].str();
+            node = node->getFileByName(matched).pointer();
+            path = path.substr(match[1].str().length(), path.length() + 1);
+    }
+    if(path.empty())
+    {
+        return node;
+    }
+    return nullptr;
 }
 
+DeepPtr<BaseNode> Catalogo::remove_aux(std::string path_file_to_remove)
+{
+    BaseNode* node_aux = root.pointer();
+    std::regex rgx ("(?:/)([a-zA-Z0-9\\.\\s]+)");
+    std::smatch match;
+    while(std::regex_search(path_file_to_remove, match, rgx)){
+        if(match[0].str() == path_file_to_remove)
+        {
+            std::string matchstr = match[0].str();
+            return node_aux->getFileByName(matchstr).pointer();
+        }
+        else{
+            std::string matched = match[1].str();
+            node_aux = node_aux->getFileByName(matched).pointer();
+            path_file_to_remove = path_file_to_remove.substr(match[1].str().length(), path_file_to_remove.length() + 1);
+        }
+      }
+        throw std::runtime_error("Non esiste il file da rimuovere");
+}
+
+
+void Catalogo::add(BaseNode* ins_filename, std::string path_final_dir)
+{
+
+    BaseNode* ins_node(nullptr);
+    ins_node = regex_fun(path_final_dir);
+    if(ins_node)
+    {
+        ins_node->addFile(ins_filename);
+    }
+    else
+        throw std::runtime_error("Non esiste il percorso in cui inserire il file desiderato");
+}
+
+void Catalogo::remove(std::string file_to_remove) //modificato da void
+{
+    remove_aux(file_to_remove).pointer();
+}
 
 void Catalogo::move(string path_start, string path_end)
 {
-    /*  idea2: controllo se esistono le due stringhe scorrendo con un for il catalogo: successivamente copio il file nel path di destinazione,
-     *         ne modifico il path facendolo combaciare con la destinazione, elimino il file dal path iniziale.
-     */
-     vector<DeepPtr<BaseNode>> lista_file = root->getFiles();
-     for (unsigned int i = 0; i < lista_file.size(); i++)
-     {
-        if (lista_file[i]->getPath() == path_start)
-        {
-            DeepPtr<BaseNode> file_to_move;
-            file_to_move->removeFile(&(*lista_file[i]));
-            for (unsigned int ii = i; ii < lista_file.size(); ii++)
-            {
-                if (lista_file[ii]->getPath() == path_end)
-                {
-                   lista_file[ii]->addFile(&(*file_to_move));
-                   return;
-                }
-            }
-        }
-     }
-    return;
-}
-
-DeepPtr<BaseNode> Catalogo::remove(string path_remove_file)
-{
-    vector<DeepPtr<BaseNode>> lista_file = root->getFiles();
-    for (auto i = lista_file.begin(); i != lista_file.end(); i++)
-    {
-        if (lista_file[i]->getPath() == path_remove_file)
-        {
-            DeepPtr<BaseNode> retPtr = lista_file[i];
-            lista_file.erase(i, i + 1);
-            return retPtr;
-        }
-    }
-    return DeepPtr<BaseNode>(nullptr);
+    add(remove_aux(path_start).pointer(), path_end);
 }
 
 long Catalogo::getSize()
@@ -86,7 +81,7 @@ int Catalogo::getFileCount()
 
 void Catalogo::copy(string file_path)
 {
-    if (root->getPath() == file_path) //cosa fare se non è corretta?
+    if (root->getName() == file_path)
         {
             root->clone();
             return;

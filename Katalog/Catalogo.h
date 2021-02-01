@@ -11,22 +11,33 @@ class Catalogo
 {
 private:
     DeepPtr<BaseNode> root;
+    /**
+     * @brief remove_aux: si occupa di ritornare il puntatore alla directory che conteneva il file che è stato eliminato
+     * @param string: è il percorso del file da rimuovere
+     * @return puntatore alla directory che conteneva il file eliminato
+     */
+    DeepPtr<BaseNode> remove_aux(std::string);
 public:
     Catalogo();
     Catalogo(DeepPtr<BaseNode>); //necessario per costruzione catalogo da radice
     ~Catalogo();
     /**
-     * @brief   add: aggiunge un file alla directory scelta
-     * @param   string: è il path del file da inserire
-     * @param   BaseNode*: è la directory di destinazione in cui si aggiunge il file
+     * @brief regex_fun: funzione che permette il controllo del percorso di un file con il metodo della regex
+     * @param   string: è il percorso che si vuole esaminare per vedere se esiste o meno
+     * @return  BaseNode*: ritorna il nodo trovato corrispondente al percorso inserito, se esiste, altrimenti ritorna un nullptr
      */
-    void add(std::string, BaseNode*);
+    BaseNode* regex_fun(std::string);
+    /**
+     * @brief   add: aggiunge un file alla directory scelta
+     * @param   string: è il name del file da inserire
+     * @param   BaseNode*: è la directory di destinazione in cui si aggiunge il file (da rivedere)
+     */
+    void add(BaseNode*, std::string);
     /**
      * @brief   remove: rimuove un file dalla sua posizione
-     * @return  directory da cui è stato eliminato il file
      * @param   string: path del file da rimuovere
      */
-    DeepPtr<BaseNode> remove(std::string);
+    void remove(std::string);
     /**
      * @brief   move: permette di spostare un file da una directory all'altra
      * @param   string: path dell'oggetto da spostare

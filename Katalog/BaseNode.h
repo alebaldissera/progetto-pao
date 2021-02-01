@@ -55,12 +55,12 @@ public:
 	/**
      * @brief addFile: permette di aggiungere un file alla directory
      */
-	void addFile(BaseNode *insert_file);
+    void addFile(DeepPtr<BaseNode> insert_file);
     /**
      * @brief removeFile: permette la rimozione di un file dalla directory
-     * @param insert_file file da inserire
+     * @param file_to_remove file da rimuovere
      */
-    DeepPtr<BaseNode> removeFile(BaseNode *file_to_remove);
+    DeepPtr<BaseNode> removeFile(DeepPtr<BaseNode> file_to_remove);
     /**
      * @brief getSize: ritorna la dimensione di un file/directory
      * @return DeepPtr<BaseNode>
@@ -82,12 +82,12 @@ public:
       */
     const vector<DeepPtr<BaseNode>>& getFiles() const;
     /**
-     * @brief getFileByName ritorna un riferiemento costante al file con il nome passato come parametro per riferimento
+     * @brief getFileByName ritorna un riferimento costante al file con il nome passato come parametro per riferimento
      * @param filename il nome del file da cercare
      * @return riferimento costante al file
      * @throw std::runtime_error
      */
-    const DeepPtr<BaseNode>& getFileByName(string &filename) const;
+    DeepPtr<BaseNode>& getFileByName(string &filename);
     /**
      * @brief getInfo: ritorna una stringa formattata con le informazioni del nodo
      * @return string
