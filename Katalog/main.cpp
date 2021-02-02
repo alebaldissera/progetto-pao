@@ -1,13 +1,14 @@
 #include <QApplication>
 #include <MainWindow.h>
 #include <LoadingView.h>
+#include <Catalogo.h>
+#include <Controller.h>
 
 int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     MainWindow window;
-    LoadingView loading;
-    loading.show();
-    window.show();
+    Katalog::Catalogo catalogo;
+    Controller c(catalogo, window);
     return a.exec();
 }

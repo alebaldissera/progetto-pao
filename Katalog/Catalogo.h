@@ -4,6 +4,7 @@
 #include "DeepPtr.h"
 #include <regex>
 #include <iostream>
+#include <Directory.h>
 
 namespace Katalog{
 
@@ -22,6 +23,7 @@ public:
     Catalogo();
     Catalogo(DeepPtr<BaseNode>); //necessario per costruzione catalogo da radice
     ~Catalogo();
+
     /**
      * @brief regex_fun: funzione che permette il controllo del percorso di un file con il metodo della regex
      * @param   string: è il percorso che si vuole esaminare per vedere se esiste o meno

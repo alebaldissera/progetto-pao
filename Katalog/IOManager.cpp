@@ -1,5 +1,11 @@
 #include "IOManager.h"
 
+//debug stuff
+#include <iostream>
+using std::cout;
+using std::endl;
+//end debug stuff
+
 using namespace Katalog;
 
 void IOManager::exportCatalogToFile(Katalog::Catalogo &catalogo, std::string pathToXmlFile)
@@ -8,12 +14,12 @@ void IOManager::exportCatalogToFile(Katalog::Catalogo &catalogo, std::string pat
 
     QFile xmlFile(QString::fromStdString(pathToXmlFile));
     QDomDocument xml("Katalog");
-    if(!xmlFile.open(QIODevice::ReadWrite))
+    if(!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
         throw std::runtime_error("Impossibile aprire il file");
-    if(!xml.setContent(&xmlFile)){
+    /*if(!xml.setContent(&xmlFile)){
         xmlFile.close();
         throw std::runtime_error("Impossibile impostare il contenuto");
-    }
+    }*/
 
     //attributo per controllare la versione del software in cui il catalogo è stato generato e per capire se il file xml creato è di questo software
     QDomElement xmlVersion = xml.createElement("KatalogVersion");
@@ -29,6 +35,9 @@ void IOManager::exportCatalogToFile(Katalog::Catalogo &catalogo, std::string pat
         xml.appendChild(el);
     }
 
+    QTextStream stream(&xmlFile);
+    cout << xml.toString().toStdString() << endl;
+    stream << xml.toString();
     xmlFile.close();
 }
 
@@ -37,10 +46,12 @@ Catalogo IOManager::importCatalogFromFile(std::string pathToXmlFile)
     QFile file(QString::fromStdString(pathToXmlFile));
     QDomDocument xml("Katalog");
     if(!file.open(QIODevice::ReadOnly))
-        throw std::runtime_error("Impossibile aprire il file");
+        //throw std::runtime_error("Impossibile aprire il file");
+        return Catalogo();
     if(!xml.setContent(&file)){
         file.close();
-        throw std::runtime_error("Impossibile impostare il contenuto");
+        //throw std::runtime_error("Impossibile impostare il contenuto");
+        return Catalogo();
     }
     QDomNode kv = xml.namedItem("KatalogVersion");
     if(kv.isElement()){
@@ -57,9 +68,8 @@ Catalogo IOManager::importCatalogFromFile(std::string pathToXmlFile)
                         QDomNode node = list.at(i);
                         root->addFile(readNodeInfo(node).pointer());
                     }
-                    return Catalogo(root);
-                } else
-                    return root; //ritorno la root vuota
+                }
+                return root; //ritorno la root vuota
             } else
                 throw std::runtime_error("Formato file errato");
         } else

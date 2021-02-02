@@ -4,20 +4,29 @@
 using namespace Katalog;
 using namespace std;
 
-Catalogo::Catalogo() : root() {}
+Catalogo::Catalogo() : root(new Directory("")) {}
 
 Catalogo::Catalogo(DeepPtr<BaseNode> catalog_root) : root(catalog_root) {}
+
+Catalogo::~Catalogo()
+{
+
+}
 
 BaseNode* Catalogo::regex_fun(string path)
 {
     BaseNode* node = root.pointer();
+    if(path == "/"){
+        return node;
+    }
     std::regex rgx ("(?:/)([a-zA-Z0-9\\.\\s]+)");
     std::smatch match;
     while(std::regex_search(path, match, rgx)){
             std::string matched = match[1].str();
             node = node->getFileByName(matched).pointer();
-            path = path.substr(match[1].str().length(), path.length() + 1);
+            path = path.substr(match[0].str().length(), path.length() + 1);
     }
+    cout << path << endl;
     if(path.empty())
     {
         return node;
@@ -33,13 +42,13 @@ DeepPtr<BaseNode> Catalogo::remove_aux(std::string path_file_to_remove)
     while(std::regex_search(path_file_to_remove, match, rgx)){
         if(match[0].str() == path_file_to_remove)
         {
-            std::string matchstr = match[0].str();
+            std::string matchstr = match[1].str();
             return node_aux->getFileByName(matchstr).pointer();
         }
         else{
             std::string matched = match[1].str();
             node_aux = node_aux->getFileByName(matched).pointer();
-            path_file_to_remove = path_file_to_remove.substr(match[1].str().length(), path_file_to_remove.length() + 1);
+            path_file_to_remove = path_file_to_remove.substr(match[0].str().length(), path_file_to_remove.length() + 1);
         }
       }
         throw std::runtime_error("Non esiste il file da rimuovere");

@@ -11,6 +11,7 @@ CONFIG += c++17
 SOURCES += \
     Catalogo.cpp \
     BaseNode.cpp \
+    Controller.cpp \
     Directory.cpp \
     IOManager.cpp \
     LoadingView.cpp \
@@ -21,6 +22,7 @@ SOURCES += \
     main.cpp
 
 HEADERS += \
+    Controller.h \
     DeepPtr.h \
     IOManager.h \
     LoadingView.h \
