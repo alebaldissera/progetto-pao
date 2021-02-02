@@ -45,3 +45,4 @@ Katalog/release/*
 /build-Katalog-Desktop-Debug/Directory.o
 /build-Katalog-Desktop-Debug/IOManager.o
 /build-Katalog-Desktop-Debug/Katalog
+/build-Katalog-Desktop-Debug/LoadingView.o

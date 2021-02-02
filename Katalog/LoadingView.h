@@ -7,6 +7,9 @@
 #include <QLabel>
 #include <QIcon>
 
+#include <QScreen>
+#include <QGuiApplication>
+
 /*
  * View da mostrare nei caricamenti dal filesystem e da distruggere una volta completati
  * Pensata per essere gestita completamente dal controller

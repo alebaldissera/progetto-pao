@@ -2,7 +2,6 @@
 
 LoadingView::LoadingView(QWidget *parent) : QWidget(parent)
 {
-    setMinimumSize(300, 100);
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
 
     QProgressBar *progress = new QProgressBar(this);
@@ -20,5 +19,11 @@ LoadingView::LoadingView(QWidget *parent) : QWidget(parent)
     mainLayout->setAlignment(Qt::AlignCenter);
 
     setLayout(mainLayout);
+
+    setMinimumSize(300, 100);
+    setMaximumSize(300, 100);
+    resize(300, 100);
     setWindowIcon(QIcon(":/Icons/katalog.svg"));
+    setWindowTitle("Katalog");
+    move(QGuiApplication::screens().at(0)->availableGeometry().center() - frameGeometry().center());
 }
