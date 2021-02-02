@@ -17,6 +17,7 @@ private:
      * @return puntatore alla directory che conteneva il file eliminato
      */
     DeepPtr<BaseNode> remove_aux(std::string);
+    bool isModified = false;
 public:
     Catalogo();
     Catalogo(DeepPtr<BaseNode>); //necessario per costruzione catalogo da radice
@@ -43,7 +44,7 @@ public:
      * @param   string: path dell'oggetto da spostare
      * @param   string: path della destinazione in cui spostare l'oggetto
      */
-    void move(string, string);
+    void move(std::string, std::string);
     /**
      * @brief   getSize: ritorna la dimensione del file/directory
      * @return  long
@@ -57,13 +58,19 @@ public:
     /**
      * @brief copy: copia di un file in memoria
      * @param string: path dell'oggetto da copiare in memoria
+     * @param string: path della destinazione in cui copiare l'oggetto
      */
-    void copy(string);
+    void copy(std::string, std::string);
     /**
      * @brief getRoot: ritorna il puntatore alla radice
      * @return pointer alla radice
      */
     const DeepPtr<BaseNode>& getRoot();
+    /**
+     * @brief isChanged: bool per vedere se è avvenuta una modifica dei file
+     * @return true se è avvenuta una modifica ai file, false altrimenti
+     */
+    bool isChanged();
 
 };
 

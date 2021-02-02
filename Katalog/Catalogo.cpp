@@ -22,7 +22,7 @@ BaseNode* Catalogo::regex_fun(string path)
     {
         return node;
     }
-    return nullptr;
+    throw std::runtime_error("File non trovato");
 }
 
 DeepPtr<BaseNode> Catalogo::remove_aux(std::string path_file_to_remove)
@@ -48,7 +48,7 @@ DeepPtr<BaseNode> Catalogo::remove_aux(std::string path_file_to_remove)
 
 void Catalogo::add(BaseNode* ins_filename, std::string path_final_dir)
 {
-
+    isModified = true;
     BaseNode* ins_node(nullptr);
     ins_node = regex_fun(path_final_dir);
     if(ins_node)
@@ -59,13 +59,15 @@ void Catalogo::add(BaseNode* ins_filename, std::string path_final_dir)
         throw std::runtime_error("Non esiste il percorso in cui inserire il file desiderato");
 }
 
-void Catalogo::remove(std::string file_to_remove) //modificato da void
+void Catalogo::remove(std::string file_to_remove)
 {
+    isModified = true;
     remove_aux(file_to_remove).pointer();
 }
 
 void Catalogo::move(string path_start, string path_end)
 {
+    isModified = true;
     add(remove_aux(path_start).pointer(), path_end);
 }
 
@@ -79,19 +81,20 @@ int Catalogo::getFileCount()
     return root->getFilesCount();
 }
 
-void Catalogo::copy(string file_path)
+void Catalogo::copy(string sorgente, string destinazione)
 {
-    if (root->getName() == file_path)
-        {
-            root->clone();
-            return;
-        }
-    return;
+    isModified = true;
+    regex_fun(destinazione)->addFile(regex_fun(sorgente)->clone());
 }
 
 const DeepPtr<BaseNode>& Catalogo::getRoot()
 {
     return root;
+}
+
+bool Catalogo::isChanged()
+{
+    return isModified;
 }
 
 
