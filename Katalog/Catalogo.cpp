@@ -26,7 +26,6 @@ BaseNode* Catalogo::regex_fun(string path)
             node = node->getFileByName(matched).pointer();
             path = path.substr(match[0].str().length(), path.length() + 1);
     }
-    cout << path << endl;
     if(path.empty())
     {
         return node;

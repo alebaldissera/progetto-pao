@@ -38,7 +38,6 @@ void IOManager::exportCatalogToFile(Katalog::Catalogo &catalogo, std::string pat
     }
 
     QTextStream stream(&xmlFile);
-    cout << xml.toString().toStdString() << endl;
     stream << xml.toString().toUtf8();
 
     xmlFile.close();
@@ -49,17 +48,13 @@ Catalogo IOManager::importCatalogFromFile(std::string pathToXmlFile)
     QFile file(QString::fromStdString(pathToXmlFile));
     QDomDocument xml;
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        throw std::runtime_error("Impossibile aprire il file");
-        //return Catalogo();
-    QString error = "";
-    int row, coloumn;
-    if(!xml.setContent(&file, &error, &row, &coloumn)){
+        //throw std::runtime_error("Impossibile aprire il file");
+        return Catalogo();
+    if(!xml.setContent(&file)){
         file.close();
-        cout << error.toStdString() << " " << row << " "<<  coloumn << endl;
-        throw std::runtime_error("Impossibile impostare il contenuto");
-        //return Catalogo();
+        //throw std::runtime_error("Impossibile leggere il contenuto del file");
+        return Catalogo();
     }
-    cout << xml.toString().toStdString() << endl;
     QDomNode DocumentRoot = xml.namedItem("Katalog");
     QDomNode kv = DocumentRoot.namedItem("KatalogVersion");
     if(kv.isElement()){
@@ -148,13 +143,10 @@ BaseNode* IOManager::readNodeInfo(QDomNode &node){
             throw std::runtime_error("Tipo file specificato non supportato");
     } else
         throw std::runtime_error("Formato file errato");
-    cout << "Ho trovato un elemento " << endl;
     if(node.hasChildNodes() && node.firstChildElement("Childs").isElement()){
-        cout << "qua arrivo" << endl;
         QDomNode childs = node.firstChildElement("Childs");
         for(int i = 0; i < childs.childNodes().count(); i++){
             QDomNode sub = childs.childNodes().at(i);
-            cout << "Figlio numero " << i <<endl;
             ptr->addFile(readNodeInfo(sub));
         }
     }
