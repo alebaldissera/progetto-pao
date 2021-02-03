@@ -55,12 +55,12 @@ public:
 	/**
      * @brief addFile: permette di aggiungere un file alla directory
      */
-    void addFile(DeepPtr<BaseNode> insert_file);
+    void addFile(BaseNode* insert_file);
     /**
      * @brief removeFile: permette la rimozione di un file dalla directory
      * @param file_to_remove file da rimuovere
      */
-    DeepPtr<BaseNode> removeFile(DeepPtr<BaseNode> file_to_remove);
+    DeepPtr<BaseNode> removeFile(BaseNode* file_to_remove);
     /**
      * @brief getSize: ritorna la dimensione di un file/directory
      * @return DeepPtr<BaseNode>

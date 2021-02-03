@@ -26,28 +26,28 @@ int BaseNode::getFilesCount() const
 	return files.size();
 }
 
-void BaseNode::addFile(DeepPtr<BaseNode> insert_file)
+void BaseNode::addFile(BaseNode* insert_file)
 {
 	for (u_int i = 0; i < files.size(); i++)
 	{
-        if (&(*files[i]) == insert_file.pointer()) //penso basti ma è da controllare
+        if (&(*files[i]) == insert_file) //penso basti ma è da controllare
 			return;
 	}
 	files.push_back(insert_file);
 }
 
-DeepPtr<BaseNode> BaseNode::removeFile(DeepPtr<BaseNode> file_to_remove)
+DeepPtr<BaseNode> BaseNode::removeFile(BaseNode* file_to_remove)
 {
     for (auto i = files.begin(); i != files.end(); i++)
     {   
-        if (&(*files[i]) == file_to_remove.pointer())
+        if (&(*files[i]) == file_to_remove)
         {
             DeepPtr<BaseNode> retPtr = files[i];
 			files.erase(i, i + 1);
-			return retPtr;
+            return retPtr;
 		}
 	}
-    return DeepPtr<BaseNode>(nullptr);
+    return nullptr;
 }
 
 const vector<DeepPtr<BaseNode>> &BaseNode::getFiles() const

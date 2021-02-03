@@ -13,7 +13,7 @@ void IOManager::exportCatalogToFile(Katalog::Catalogo &catalogo, std::string pat
     const NodePtr root = catalogo.getRoot();
 
     QFile xmlFile(QString::fromStdString(pathToXmlFile));
-    QDomDocument xml("Katalog");
+    QDomDocument xml;
     if(!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
         throw std::runtime_error("Impossibile aprire il file");
     /*if(!xml.setContent(&xmlFile)){
@@ -21,10 +21,12 @@ void IOManager::exportCatalogToFile(Katalog::Catalogo &catalogo, std::string pat
         throw std::runtime_error("Impossibile impostare il contenuto");
     }*/
 
+    QDomElement DocumentRoot = xml.createElement("Katalog");
+    xml.appendChild(DocumentRoot);
     //attributo per controllare la versione del software in cui il catalogo è stato generato e per capire se il file xml creato è di questo software
     QDomElement xmlVersion = xml.createElement("KatalogVersion");
     xmlVersion.setAttribute("SoftwareVersion", 1);
-    xml.appendChild(xmlVersion);
+    DocumentRoot.appendChild(xmlVersion);
     //attributo per salvare la sruttura del catalogo
     QDomElement el = xml.createElement("FileStructure");
 
@@ -32,33 +34,39 @@ void IOManager::exportCatalogToFile(Katalog::Catalogo &catalogo, std::string pat
     for(auto i = files.begin(); i != files.end(); i++){
         populateXmlDocument(xml, el, files[i]);
 
-        xml.appendChild(el);
+        DocumentRoot.appendChild(el);
     }
 
     QTextStream stream(&xmlFile);
     cout << xml.toString().toStdString() << endl;
-    stream << xml.toString();
+    stream << xml.toString().toUtf8();
+
     xmlFile.close();
 }
 
 Catalogo IOManager::importCatalogFromFile(std::string pathToXmlFile)
 {
     QFile file(QString::fromStdString(pathToXmlFile));
-    QDomDocument xml("Katalog");
-    if(!file.open(QIODevice::ReadOnly))
-        //throw std::runtime_error("Impossibile aprire il file");
-        return Catalogo();
-    if(!xml.setContent(&file)){
+    QDomDocument xml;
+    if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        throw std::runtime_error("Impossibile aprire il file");
+        //return Catalogo();
+    QString error = "";
+    int row, coloumn;
+    if(!xml.setContent(&file, &error, &row, &coloumn)){
         file.close();
-        //throw std::runtime_error("Impossibile impostare il contenuto");
-        return Catalogo();
+        cout << error.toStdString() << " " << row << " "<<  coloumn << endl;
+        throw std::runtime_error("Impossibile impostare il contenuto");
+        //return Catalogo();
     }
-    QDomNode kv = xml.namedItem("KatalogVersion");
+    cout << xml.toString().toStdString() << endl;
+    QDomNode DocumentRoot = xml.namedItem("Katalog");
+    QDomNode kv = DocumentRoot.namedItem("KatalogVersion");
     if(kv.isElement()){
-        QDomNode sv = kv.namedItem("SoftwareVersion");
+        QDomNode sv = kv.attributes().namedItem("SoftwareVersion");
         if(sv.isAttr() && sv.toAttr().value() == "1"){
             //il file è ok e nella versione corretta. posso procedere a leggere la struttura dati
-            QDomNode fs = xml.namedItem("FileStructure");
+            QDomNode fs = DocumentRoot.namedItem("FileStructure");
             if(fs.isElement()){
                 DeepPtr<BaseNode> root = new Directory("");
                 if(fs.hasChildNodes()){
@@ -66,10 +74,10 @@ Catalogo IOManager::importCatalogFromFile(std::string pathToXmlFile)
                     QDomNodeList list = fs.childNodes();
                     for(int i = 0; i < list.count(); ++i){
                         QDomNode node = list.at(i);
-                        root->addFile(readNodeInfo(node).pointer());
+                        root->addFile(readNodeInfo(node));
                     }
                 }
-                return root; //ritorno la root vuota
+                return root;
             } else
                 throw std::runtime_error("Formato file errato");
         } else
@@ -83,7 +91,7 @@ void IOManager::populateXmlDocument(QDomDocument &doc, QDomElement &element, Nod
     auto files = node->getFiles();
     QDomElement el = createCreateElement(doc, node); //creo me stesso
     for(auto i = files.begin(); i != files.end(); i++){
-        QDomElement childs = doc.createElement("Child");
+        QDomElement childs = doc.createElement("Childs");
 
         populateXmlDocument(doc, childs, files[i]); //chiamata ricorsiva sui figli
 
@@ -94,9 +102,23 @@ void IOManager::populateXmlDocument(QDomDocument &doc, QDomElement &element, Nod
 
 QDomElement IOManager::createCreateElement(QDomDocument &doc, NodePtr &node)
 {
-    QDomElement el = doc.createElement((!dynamic_cast<Katalog::Directory*>(&(*node))) ? "KFile" : "KDirectory");
+    /*QDomElement el = doc.createElement((!dynamic_cast<Katalog::Directory*>(&(*node))) ? "KFile" : "KDirectory");
     el.setAttribute("Name", QString::fromStdString(node->getName()));
     if(!dynamic_cast<Katalog::Directory*>(node.pointer())) {
+        QString type;
+        if(dynamic_cast<Katalog::Photo*>(node.pointer())) type = "KPhoto";
+        else if (dynamic_cast<Katalog::Audio*>(node.pointer())) type = "KAudio";
+        else type = "KVideo";
+        el.setAttribute("FileType", type);
+        el.setAttribute("PathToDisk", QString::fromStdString(node->getPath()));
+    }*/
+
+    bool file = dynamic_cast<Katalog::Photo*>(node.pointer()) != 0 ||
+            dynamic_cast<Katalog::Audio*>(node.pointer()) != 0 ||
+            dynamic_cast<Katalog::Video*>(node.pointer()) != 0;
+    QDomElement el = doc.createElement(file ? "KFile" : "KDirectory");
+    el.setAttribute("Name", QString::fromStdString(node->getName()));
+    if(file){
         QString type;
         if(dynamic_cast<Katalog::Photo*>(node.pointer())) type = "KPhoto";
         else if (dynamic_cast<Katalog::Audio*>(node.pointer())) type = "KAudio";
@@ -107,7 +129,7 @@ QDomElement IOManager::createCreateElement(QDomDocument &doc, NodePtr &node)
     return el;
 }
 
-NodePtr IOManager::readNodeInfo(QDomNode &node){
+BaseNode* IOManager::readNodeInfo(QDomNode &node){
     //funzione ricorsiva che si occupa di leggere la struttura ad albero dei file
     BaseNode *ptr;
     if(node.nodeName() == "KDirectory")
@@ -126,12 +148,15 @@ NodePtr IOManager::readNodeInfo(QDomNode &node){
             throw std::runtime_error("Tipo file specificato non supportato");
     } else
         throw std::runtime_error("Formato file errato");
-
-    for(int i = 0; i < node.childNodes().count(); i++){
-        QDomNode sub = node.childNodes().at(i);
-        ptr->addFile(readNodeInfo(sub).pointer());
+    cout << "Ho trovato un elemento " << endl;
+    if(node.hasChildNodes() && node.firstChildElement("Childs").isElement()){
+        cout << "qua arrivo" << endl;
+        QDomNode childs = node.firstChildElement("Childs");
+        for(int i = 0; i < childs.childNodes().count(); i++){
+            QDomNode sub = childs.childNodes().at(i);
+            cout << "Figlio numero " << i <<endl;
+            ptr->addFile(readNodeInfo(sub));
+        }
     }
-    DeepPtr ret = DeepPtr(ptr);
-    delete ptr;
-    return ret;
+    return ptr;
 }

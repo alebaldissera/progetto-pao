@@ -25,7 +25,7 @@ class MainWindow : public QWidget
 public:
     explicit MainWindow(QWidget *parent = nullptr);
     void setController(Controller *c);
-    void updateTree(Katalog::BaseNode* root);
+    void updateTree(const Katalog::BaseNode* root);
     void clearTree();
 
 private:
@@ -38,7 +38,7 @@ private:
     Controller *controller;
 
     void addMenus(QLayout *layout);
-    void updateTreeRecursive(Katalog::BaseNode* root, QTreeWidgetItem *itemParent);
+    void updateTreeRecursive(const Katalog::BaseNode* root, QTreeWidgetItem *itemParent);
     static std::string getFileName(std::string &sou0rce);
     std::string getSelectedFilePath() const;
 

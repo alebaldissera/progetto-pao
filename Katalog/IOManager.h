@@ -57,7 +57,7 @@ namespace Katalog {
          * @return Un DeepPtr alla base della struttura
          * @throw runtime_error
          */
-        static NodePtr readNodeInfo(QDomNode &node);
+        static BaseNode* readNodeInfo(QDomNode &node);
     };
 
 };

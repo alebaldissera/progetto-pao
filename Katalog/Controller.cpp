@@ -14,6 +14,7 @@ Controller::Controller(Katalog::Catalogo &cat, MainWindow &mw, QObject *parent) 
 
     try{
         catalogo = Katalog::IOManager::importCatalogFromFile("Katalog.xml");
+        mainwindow.updateTree(catalogo.getRoot().pointer());
     }catch (std::runtime_error &e){
         cout << e.what() << endl;
         QMessageBox m(QMessageBox::Critical, "Errore lettura catalog", e.what(), QMessageBox::Cancel);

@@ -49,7 +49,7 @@ void MainWindow::setController(Controller *c)
     connect(SaveAction, SIGNAL(triggered(bool)), controller, SLOT(saveCatalog()));
 }
 
-void MainWindow::updateTree(Katalog::BaseNode *root)
+void MainWindow::updateTree(const Katalog::BaseNode *root)
 {
     clearTree();
     if(!root) return;
@@ -130,7 +130,7 @@ void MainWindow::addMenus(QLayout *layout)
     //end edit menu
 }
 
-void MainWindow::updateTreeRecursive(Katalog::BaseNode *root, QTreeWidgetItem *itemParent)
+void MainWindow::updateTreeRecursive(const Katalog::BaseNode *root, QTreeWidgetItem *itemParent)
 {
     auto &files = root->getFiles();
     for(auto i = files.begin(); i != files.end(); i++){
