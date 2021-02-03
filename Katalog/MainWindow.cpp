@@ -20,12 +20,13 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent), controller(nullptr)
 
 
     //tree view per rappresentare la struttura ad albero del catalogo
-    catalogView = new QTreeWidget(this);
+    catalogView = new DeselectableTreeView(this);
     QSizePolicy catalogPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     catalogPolicy.setHorizontalStretch(1);
     catalogView->setSizePolicy(catalogPolicy);
     catalogView->setHeaderHidden(true);
     catalogView->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
+
     screenLayout->addWidget(catalogView);
 
     //widget fittizio solo per vedere le proporzioni
@@ -49,7 +50,7 @@ void MainWindow::setController(Controller *c)
     connect(SaveAction, SIGNAL(triggered(bool)), controller, SLOT(saveCatalog()));
 }
 
-void MainWindow::updateTree(Katalog::BaseNode *root)
+void MainWindow::updateTree(const Katalog::BaseNode *root)
 {
     clearTree();
     if(!root) return;
@@ -81,6 +82,14 @@ void MainWindow::addMenus(QLayout *layout)
     QAction *ImportAudio = new QAction("Importa audio", MenuBar);
     QAction *ImportVideo = new QAction("Importa video", MenuBar);
 
+
+    ImportPhoto->setShortcut(QKeySequence("Ctrl+I"));
+    ImportPhoto->setShortcutVisibleInContextMenu(true);
+    ImportAudio->setShortcut(QKeySequence("Ctrl+A"));
+    ImportAudio->setShortcutVisibleInContextMenu(true);
+    ImportVideo->setShortcut(QKeySequence("Ctrl+M"));
+    ImportVideo->setShortcutVisibleInContextMenu(true);
+
     FileMenu->addAction(ImportPhoto);
     FileMenu->addAction(ImportAudio);
     FileMenu->addAction(ImportVideo);
@@ -91,14 +100,17 @@ void MainWindow::addMenus(QLayout *layout)
 
     FileMenu->addSeparator();
     SaveAction = new QAction("Salva catalogo", FileMenu);
+
+    SaveAction->setShortcut(QKeySequence("Ctrl+S"));
+    SaveAction->setShortcutVisibleInContextMenu(true);
+
     FileMenu->addAction(SaveAction);
 
     FileMenu->addSeparator();
     QAction *ExitAction = new QAction("Esci", FileMenu);
 
-    QShortcut *ExitShorcut = new QShortcut(QKeySequence("Ctrl+Q"), this);
-
-    connect(ExitShorcut, SIGNAL(activated()), ExitAction, SIGNAL(triggered()));
+    ExitAction->setShortcut(QKeySequence("Ctrl+Q"));
+    ExitAction->setShortcutVisibleInContextMenu(true);
 
     connect(ExitAction, SIGNAL(triggered(bool)), this, SLOT(close()));
     FileMenu->addAction(ExitAction);
@@ -113,10 +125,23 @@ void MainWindow::addMenus(QLayout *layout)
     QAction *CutAction = new QAction("Taglia", EditMenu);
     QAction *RemoveAction = new QAction("Elimina", EditMenu);
 
+    CopyAction->setShortcut(QKeySequence("Ctrl+C"));
+    CopyAction->setShortcutVisibleInContextMenu(true);
+    CutAction->setShortcut(QKeySequence("Ctrl+X"));
+    CutAction->setShortcutVisibleInContextMenu(true);
+    PasteAction->setShortcut(QKeySequence("Ctrl+V"));
+    PasteAction->setShortcutVisibleInContextMenu(true);
+    RemoveAction->setShortcut(QKeySequence("Delete"));
+    RemoveAction->setShortcutVisibleInContextMenu(true);
+
     EditMenu->addAction(CopyAction);
     EditMenu->addAction(PasteAction);
     EditMenu->addAction(CutAction);
     EditMenu->addAction(RemoveAction);
+
+    //end edit menu
+
+    //view menu
 
     QMenu *ViewMenu = new QMenu("Visualizza", MenuBar);
     MenuBar->addMenu(ViewMenu);
@@ -127,10 +152,10 @@ void MainWindow::addMenus(QLayout *layout)
     ViewMenu->addAction(GridView);
     ViewMenu->addAction(PlayView);
 
-    //end edit menu
+    //end view menu
 }
 
-void MainWindow::updateTreeRecursive(Katalog::BaseNode *root, QTreeWidgetItem *itemParent)
+void MainWindow::updateTreeRecursive(const Katalog::BaseNode *root, QTreeWidgetItem *itemParent)
 {
     auto &files = root->getFiles();
     for(auto i = files.begin(); i != files.end(); i++){

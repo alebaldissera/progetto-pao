@@ -12,6 +12,7 @@ SOURCES += \
     Catalogo.cpp \
     BaseNode.cpp \
     Controller.cpp \
+    DeselectableTreeView.cpp \
     Directory.cpp \
     IOManager.cpp \
     LoadingView.cpp \
@@ -24,6 +25,7 @@ SOURCES += \
 HEADERS += \
     Controller.h \
     DeepPtr.h \
+    DeselectableTreeView.h \
     IOManager.h \
     LoadingView.h \
     MainWindow.h \
