@@ -1,11 +1,5 @@
 #include "IOManager.h"
 
-//debug stuff
-#include <iostream>
-using std::cout;
-using std::endl;
-//end debug stuff
-
 using namespace Katalog;
 
 void IOManager::exportCatalogToFile(Katalog::Catalogo &catalogo, std::string pathToXmlFile)

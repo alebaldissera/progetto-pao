@@ -11,7 +11,7 @@
 #include <QMenuBar>
 #include <QMenu>
 #include <QAction>
-#include <QTreeWidget>
+#include <DeselectableTreeView.h>
 #include <QShortcut>
 #include <QFileDialog>
 
@@ -29,7 +29,7 @@ public:
     void clearTree();
 
 private:
-    QTreeWidget *catalogView;
+    DeselectableTreeView *catalogView;
     QWidget *screen;
 
     //menu actions
