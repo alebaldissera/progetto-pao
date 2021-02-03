@@ -20,7 +20,8 @@ SOURCES += \
     Photo.cpp \
     Audio.cpp \
     Video.cpp \
-    main.cpp
+    main.cpp \
+    previewwindow.cpp
 
 HEADERS += \
     Controller.h \
@@ -35,7 +36,8 @@ HEADERS += \
     Directory.h \
     Photo.h \
     Audio.h \
-    Video.h
+    Video.h \
+    previewwindow.h
 
 
 # Default rules for deployment.
