@@ -1,5 +1,9 @@
 <RCC>
     <qresource prefix="/Icons">
         <file>katalog.svg</file>
+        <file>folder.svg</file>
+        <file>image-gallery.svg</file>
+        <file>speaker.svg</file>
+        <file>video.svg</file>
     </qresource>
 </RCC>
