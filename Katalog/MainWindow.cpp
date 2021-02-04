@@ -57,7 +57,7 @@ void MainWindow::updateTree(const Katalog::BaseNode *root)
     auto &files = root->getFiles();
     for(auto i = files.begin(); i != files.end(); i++){
         QTreeWidgetItem *item = new QTreeWidgetItem(catalogView);
-        setTreeWidgetItemIcon(item, files[i].pointer());
+        setTreeWidgetItemExtras(item, files[i].pointer());
         item->setText(0, QString::fromStdString(files[i]->getName()));
         if(files[i]->getFilesCount() > 0){
             updateTreeRecursive(files[i].pointer(), item);
@@ -162,7 +162,7 @@ void MainWindow::updateTreeRecursive(const Katalog::BaseNode *root, QTreeWidgetI
     for(auto i = files.begin(); i != files.end(); i++){
         QTreeWidgetItem *item = new QTreeWidgetItem(itemParent);;
         item->setText(0, QString::fromStdString(files[i]->getName()));
-        setTreeWidgetItemIcon(item, files[i].pointer());
+        setTreeWidgetItemExtras(item, files[i].pointer());
         if(files[i]->getFilesCount() > 0){
             updateTreeRecursive(files[i].pointer(), item);
         }
@@ -188,7 +188,7 @@ std::string MainWindow::getSelectedFilePath() const
     return destination;
 }
 
-void MainWindow::setTreeWidgetItemIcon(QTreeWidgetItem *item, Katalog::BaseNode* file)
+void MainWindow::setTreeWidgetItemExtras(QTreeWidgetItem *item, Katalog::BaseNode* file)
 {
     if(dynamic_cast<Katalog::Photo*>(file))
         item->setIcon(0, QIcon(":/Icons/image-gallery.svg"));
@@ -198,6 +198,8 @@ void MainWindow::setTreeWidgetItemIcon(QTreeWidgetItem *item, Katalog::BaseNode*
         item->setIcon(0, QIcon(":/Icons/video.svg"));
     else
         item->setIcon(0, QIcon(":/Icons/folder.svg"));
+
+    item->setToolTip(0, QString::fromStdString(file->getInfo()));
 }
 
 void MainWindow::addPhoto()

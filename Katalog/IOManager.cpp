@@ -127,14 +127,18 @@ BaseNode* IOManager::readNodeInfo(QDomNode &node){
         std::string fileType = node.toElement().attribute("FileType").toStdString();
         std::string name = node.toElement().attribute("Name").toStdString();
         std::string pathToDisk = node.toElement().attribute("PathToDisk").toStdString();
-        if(fileType == "KPhoto")
-            ptr = new Photo(name, pathToDisk);
-        else if(fileType == "KAudio")
-            ptr = new Audio(name, pathToDisk);
-        else if (fileType == "KVideo")
-            ptr = new Video(name, pathToDisk);
-        else
-            throw std::runtime_error("Tipo file specificato non supportato");
+        if(!std::filesystem::exists(pathToDisk))
+            ptr = new Directory(name);
+        else {
+            if(fileType == "KPhoto")
+                ptr = new Photo(name, pathToDisk);
+            else if(fileType == "KAudio")
+                ptr = new Audio(name, pathToDisk);
+            else if (fileType == "KVideo")
+                ptr = new Video(name, pathToDisk);
+            else
+                throw std::runtime_error("Tipo file specificato non supportato");
+        }
     } else
         throw std::runtime_error("Formato file errato");
     if(node.hasChildNodes() && node.firstChildElement("Childs").isElement()){

@@ -4,6 +4,8 @@
 #include <QMediaPlayer>
 #include <sstream>
 
+#include <iostream>
+
 Katalog::Photo::Photo(string _name, string _path): Directory(_name, _path)
 {
     QImage img = QImage(QString::fromStdString(_path));
@@ -11,10 +13,11 @@ Katalog::Photo::Photo(string _name, string _path): Directory(_name, _path)
     risoluzione.second = img.height();
     auto player = new QMediaPlayer;
     player->setMedia(QUrl::fromLocalFile(QString::fromStdString(_path)));
-    //viene fatto in 3 passaggi per evitare un warning
+    //viene fatto in 3 passaggi per evitare un warning    
     camera = player->metaData(QMediaMetaData::CameraManufacturer).String;
     camera += " ";
     camera += player->metaData(QMediaMetaData::CameraModel).String;
+    if(camera == "\n \n") camera = "N/D";
     size = std::filesystem::file_size(getPath());
 }
 
