@@ -29,11 +29,6 @@ long Katalog::Video::getAllSize() const
 	return getSize() + Directory::getAllSize();
 }
 
-string Katalog::Video::getIcon() const
-{
-    return "/icons/video.ico";
-}
-
 std::string Katalog::Video::getInfo() const
 {
     std::stringstream s;

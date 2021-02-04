@@ -33,11 +33,6 @@ long Katalog::Photo::getAllSize() const
 	return getSize() + Directory::getAllSize();
 }
 
-string Katalog::Photo::getIcon() const
-{
-    return "/icons/photo.img";
-}
-
 std::string Katalog::Photo::getInfo() const
 {
     std::stringstream s;

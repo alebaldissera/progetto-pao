@@ -1,5 +1,11 @@
 #include "DeselectableTreeView.h"
 
+//debug stuff
+#include <iostream>
+using std::cout;
+using std::endl;
+//end debug stuff
+
 DeselectableTreeView::DeselectableTreeView(QWidget *parent): QTreeWidget(parent) {}
 
 DeselectableTreeView::~DeselectableTreeView() {}
@@ -7,8 +13,9 @@ DeselectableTreeView::~DeselectableTreeView() {}
 void DeselectableTreeView::mousePressEvent(QMouseEvent *event)
 {
     QModelIndex item = indexAt(event->pos());
-    bool selected = selectionModel()->isSelected(item);
-    QTreeView::mousePressEvent(event);
-    if(!selected)
-        selectionModel()->clearSelection();
+    if(item.isValid()){
+        QTreeView::mousePressEvent(event);
+    } else {
+        clearSelection();
+    }
 }
