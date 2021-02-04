@@ -4,7 +4,7 @@
 
 using namespace Katalog; //messo per comodità, da rimuovere una volta finito
 
-BaseNode::BaseNode(string _nome, string _path) : name(_nome), path(_path), size(-1), allSize(-1) {}
+BaseNode::BaseNode(string _nome, string _path) : name(_nome), path(_path), directoryOpened(false), size(-1), allSize(-1) {}
 
 string BaseNode::getName() const
 {
@@ -63,4 +63,19 @@ DeepPtr<BaseNode> &BaseNode::getFileByName(std::string &filename)
         }
     }
     throw std::runtime_error("Il file non esiste");
+}
+
+bool BaseNode::isOpen() const
+{
+    return directoryOpened;
+}
+
+void BaseNode::open()
+{
+    directoryOpened = true;
+}
+
+void BaseNode::close()
+{
+    directoryOpened = false;
 }

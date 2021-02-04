@@ -10,10 +10,6 @@ void IOManager::exportCatalogToFile(Katalog::Catalogo &catalogo, std::string pat
     QDomDocument xml;
     if(!xmlFile.open(QIODevice::WriteOnly | QIODevice::Text))
         throw std::runtime_error("Impossibile aprire il file");
-    /*if(!xml.setContent(&xmlFile)){
-        xmlFile.close();
-        throw std::runtime_error("Impossibile impostare il contenuto");
-    }*/
 
     QDomElement DocumentRoot = xml.createElement("Katalog");
     xml.appendChild(DocumentRoot);
@@ -91,22 +87,12 @@ void IOManager::populateXmlDocument(QDomDocument &doc, QDomElement &element, Nod
 
 QDomElement IOManager::createCreateElement(QDomDocument &doc, NodePtr &node)
 {
-    /*QDomElement el = doc.createElement((!dynamic_cast<Katalog::Directory*>(&(*node))) ? "KFile" : "KDirectory");
-    el.setAttribute("Name", QString::fromStdString(node->getName()));
-    if(!dynamic_cast<Katalog::Directory*>(node.pointer())) {
-        QString type;
-        if(dynamic_cast<Katalog::Photo*>(node.pointer())) type = "KPhoto";
-        else if (dynamic_cast<Katalog::Audio*>(node.pointer())) type = "KAudio";
-        else type = "KVideo";
-        el.setAttribute("FileType", type);
-        el.setAttribute("PathToDisk", QString::fromStdString(node->getPath()));
-    }*/
-
     bool file = dynamic_cast<Katalog::Photo*>(node.pointer()) != 0 ||
             dynamic_cast<Katalog::Audio*>(node.pointer()) != 0 ||
             dynamic_cast<Katalog::Video*>(node.pointer()) != 0;
     QDomElement el = doc.createElement(file ? "KFile" : "KDirectory");
     el.setAttribute("Name", QString::fromStdString(node->getName()));
+    el.setAttribute("IsOpen", QString::fromStdString(node->isOpen() ? "True" : "False"));
     if(file){
         QString type;
         if(dynamic_cast<Katalog::Photo*>(node.pointer())) type = "KPhoto";
@@ -141,6 +127,9 @@ BaseNode* IOManager::readNodeInfo(QDomNode &node){
         }
     } else
         throw std::runtime_error("Formato file errato");
+    if(node.toElement().attribute("IsOpen").toStdString() == "True") {
+        ptr->open();
+    }
     if(node.hasChildNodes() && node.firstChildElement("Childs").isElement()){
         QDomNode childs = node.firstChildElement("Childs");
         for(int i = 0; i < childs.childNodes().count(); i++){

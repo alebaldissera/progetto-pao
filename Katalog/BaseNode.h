@@ -20,6 +20,7 @@ private:
     string name;
     vector<DeepPtr<BaseNode>> files;
     string path;
+    bool directoryOpened;
 
 protected:
     long size;
@@ -88,6 +89,19 @@ public:
      * @return string
      */
     virtual string getInfo() const = 0;
+    /**
+     * @brief isOpen: ritorna true sse il nodo è stato aperto
+     * @return bool
+     */
+    bool isOpen() const;
+    /**
+     * @brief open imposta il nodo come aperto, rende visibili le sue directory
+     */
+    void open();
+    /**
+     * @brief close imposta il nodo come chiuso, rende visibili le sue direcotory
+     */
+    void close();
 };
 
 }

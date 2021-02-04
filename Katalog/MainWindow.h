@@ -19,6 +19,8 @@
 
 class Controller;
 
+typedef Katalog::vector<std::string> PathList;
+
 class MainWindow : public QWidget
 {
     Q_OBJECT
@@ -39,9 +41,10 @@ private:
 
     void addMenus(QLayout *layout);
     void updateTreeRecursive(const Katalog::BaseNode* root, QTreeWidgetItem *itemParent);
-    static std::string getFileName(std::string &sou0rce);
+    static std::string getFileName(std::string &source);
     std::string getSelectedFilePath() const;
     void setTreeWidgetItemExtras(QTreeWidgetItem *item, Katalog::BaseNode* file);
+    static std::string getItemPath(QTreeWidgetItem* item);
 
 signals:
     void addFile(Katalog::BaseNode*, std::string destination);
@@ -50,7 +53,6 @@ private slots:
     void addPhoto();
     void addAudio();
     void addVideo();
-
 };
 
 #endif // MAINWINDOW_H

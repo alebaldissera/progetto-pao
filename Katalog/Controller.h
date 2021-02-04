@@ -26,10 +26,13 @@ signals:
 public slots:
     void addFile(Katalog::BaseNode *file, std::string destination);
     void saveCatalog();
+    void openDirectory(QTreeWidgetItem *node);
+    void closeDirectory(QTreeWidgetItem *node);
 
 private:
     Katalog::Catalogo &catalogo;
     MainWindow &mainwindow;
+    static std::string getItemPath(QTreeWidgetItem* item);
 
 };
 

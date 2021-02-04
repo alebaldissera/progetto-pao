@@ -6,6 +6,8 @@
 #include <iostream>
 #include <Directory.h>
 
+typedef Katalog::vector<std::string> PathList;
+
 namespace Katalog{
 
 class Catalogo
@@ -19,6 +21,8 @@ private:
      */
     DeepPtr<BaseNode> remove_aux(std::string);
     bool isModified = false;
+    PathList openedNodes;
+
 public:
     Catalogo();
     Catalogo(DeepPtr<BaseNode>); //necessario per costruzione catalogo da radice
@@ -73,6 +77,22 @@ public:
      * @return true se è avvenuta una modifica ai file, false altrimenti
      */
     bool isChanged();
+
+    /**
+     * @brief setFileAsOpened: imposta il file come aperto
+     * @param path path al file sulla struttura virtuale
+     */
+    void setFileAsOpened(std::string &path);
+    /**
+     * @brief setFileAsClosed: imposta il file come chiuso
+     * @param path path al file sulla struttura virtuale
+     */
+    void setFileAsClosed(std::string &path);
+    /**
+     * @brief getFileOpenState: ritorna lo stato di apertura di un file
+     * @param path path al file sulla struttura virtuale
+     */
+    bool getFileOpenState(std::string &path);
     /**
      * @brief getFile: ritorna il nodo indicato dalla path inserita
      * @param path_file: path del file di cui ritornarne il nodo

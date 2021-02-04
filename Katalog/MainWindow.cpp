@@ -48,6 +48,8 @@ void MainWindow::setController(Controller *c)
     controller = c;
     connect(this, SIGNAL(addFile(Katalog::BaseNode*,std::string)), controller, SLOT(addFile(Katalog::BaseNode*,std::string)));
     connect(SaveAction, SIGNAL(triggered(bool)), controller, SLOT(saveCatalog()));
+    connect(catalogView, SIGNAL(itemExpanded(QTreeWidgetItem*)), controller, SLOT(openDirectory(QTreeWidgetItem*)));
+    connect(catalogView, SIGNAL(itemCollapsed(QTreeWidgetItem*)), controller, SLOT(closeDirectory(QTreeWidgetItem*)));
 }
 
 void MainWindow::updateTree(const Katalog::BaseNode *root)
@@ -55,6 +57,7 @@ void MainWindow::updateTree(const Katalog::BaseNode *root)
     clearTree();
     if(!root) return;
     auto &files = root->getFiles();
+    Katalog::vector<QTreeWidgetItem*> openItem;
     for(auto i = files.begin(); i != files.end(); i++){
         QTreeWidgetItem *item = new QTreeWidgetItem(catalogView);
         setTreeWidgetItemExtras(item, files[i].pointer());
@@ -62,6 +65,7 @@ void MainWindow::updateTree(const Katalog::BaseNode *root)
         if(files[i]->getFilesCount() > 0){
             updateTreeRecursive(files[i].pointer(), item);
         }
+        item->setExpanded(files[i]->isOpen());
     }
 }
 
@@ -166,6 +170,7 @@ void MainWindow::updateTreeRecursive(const Katalog::BaseNode *root, QTreeWidgetI
         if(files[i]->getFilesCount() > 0){
             updateTreeRecursive(files[i].pointer(), item);
         }
+        item->setExpanded(files[i]->isOpen());
     }
 }
 
@@ -200,6 +205,14 @@ void MainWindow::setTreeWidgetItemExtras(QTreeWidgetItem *item, Katalog::BaseNod
         item->setIcon(0, QIcon(":/Icons/folder.svg"));
 
     item->setToolTip(0, QString::fromStdString(file->getInfo()));
+}
+
+std::string MainWindow::getItemPath(QTreeWidgetItem *item)
+{
+    string path = "/" + item->text(0).toStdString();
+    while((item = item->parent()))
+        path = "/" + item->text(0).toStdString() + path;
+    return path;
 }
 
 void MainWindow::addPhoto()

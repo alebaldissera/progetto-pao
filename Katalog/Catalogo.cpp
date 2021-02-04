@@ -105,17 +105,21 @@ bool Catalogo::isChanged()
     return isModified;
 }
 
+void Catalogo::setFileAsOpened(string &path)
+{
+    regex_fun(path)->open();
+}
 BaseNode *Catalogo::getFile(std::string path_file)
 {
     return regex_fun(path_file);
 }
 
-void Catalogo::setFileName(std::string path_file, std::string name)
+void Catalogo::setFileAsClosed(string &path)
 {
-    regex_fun(path_file)->setName(name);
+    regex_fun(path)->close();
 }
 
-
-
-
-
+bool Catalogo::getFileOpenState(string &path)
+{
+    return regex_fun(path)->isOpen();
+}
