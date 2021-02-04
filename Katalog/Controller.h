@@ -22,12 +22,15 @@ public:
     explicit Controller(Katalog::Catalogo &cat, MainWindow &mw, QObject *parent = nullptr);
 
 signals:
+    void catalogUpdated();
 
 public slots:
     void addFile(Katalog::BaseNode *file, std::string destination);
     void saveCatalog();
     void openDirectory(QTreeWidgetItem *node);
     void closeDirectory(QTreeWidgetItem *node);
+    void treeItemClicked(QTreeWidgetItem*,int);
+    void viewGridOnRoot();
 
 private:
     Katalog::Catalogo &catalogo;

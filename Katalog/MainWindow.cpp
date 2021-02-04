@@ -15,7 +15,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent), controller(nullptr)
     mainLayout->setMargin(0);
     addMenus(mainLayout);
 
-    QHBoxLayout *screenLayout = new QHBoxLayout(this);
+    screenLayout = new QHBoxLayout(this);
     mainLayout->addLayout(screenLayout);
 
 
@@ -50,6 +50,8 @@ void MainWindow::setController(Controller *c)
     connect(SaveAction, SIGNAL(triggered(bool)), controller, SLOT(saveCatalog()));
     connect(catalogView, SIGNAL(itemExpanded(QTreeWidgetItem*)), controller, SLOT(openDirectory(QTreeWidgetItem*)));
     connect(catalogView, SIGNAL(itemCollapsed(QTreeWidgetItem*)), controller, SLOT(closeDirectory(QTreeWidgetItem*)));
+    connect(catalogView, SIGNAL(itemClicked(QTreeWidgetItem*,int)), controller, SLOT(treeItemClicked(QTreeWidgetItem*,int)));
+    connect(catalogView, SIGNAL(itemsDeselected()), controller, SLOT(viewGridOnRoot()));
 }
 
 void MainWindow::updateTree(const Katalog::BaseNode *root)
@@ -72,6 +74,19 @@ void MainWindow::updateTree(const Katalog::BaseNode *root)
 void MainWindow::clearTree()
 {
     catalogView->clear();
+}
+
+void MainWindow::showGrid(const FileList &files)
+{
+    screen->close(); //gridview ha il flag WA_DeleteOnClose impostato a true quindi il widget viene distrutto quando viene chiuso, dunque non è necessaria una delete
+    screenLayout->removeWidget(screen);
+    screen = new GridView(files);
+    QSizePolicy widgetPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    widgetPolicy.setHorizontalStretch(3);
+    screen->setSizePolicy(widgetPolicy);
+    screenLayout->addWidget(screen);
+    connect(screen, SIGNAL(doubleClickedItem(Katalog::BaseNode*)), this, SLOT(doubleClickOnGridItem(Katalog::BaseNode*)));
+    connect(controller, SIGNAL(catalogUpdated()), screen, SLOT(redrawGrid()));
 }
 
 void MainWindow::addMenus(QLayout *layout)
@@ -244,3 +259,10 @@ void MainWindow::addVideo()
         emit addFile(new Katalog::Video(filename, source), destination);
     }
 }
+
+void MainWindow::doubleClickOnGridItem(Katalog::BaseNode *file)
+{
+    if(file->getFilesCount() > 0)
+        showGrid(file->getFiles());
+}
+

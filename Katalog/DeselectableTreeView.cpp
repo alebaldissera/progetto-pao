@@ -8,8 +8,6 @@ using std::endl;
 
 DeselectableTreeView::DeselectableTreeView(QWidget *parent): QTreeWidget(parent) {}
 
-DeselectableTreeView::~DeselectableTreeView() {}
-
 void DeselectableTreeView::mousePressEvent(QMouseEvent *event)
 {
     QModelIndex item = indexAt(event->pos());
@@ -17,5 +15,6 @@ void DeselectableTreeView::mousePressEvent(QMouseEvent *event)
         QTreeView::mousePressEvent(event);
     } else {
         clearSelection();
+        emit itemsDeselected();
     }
 }

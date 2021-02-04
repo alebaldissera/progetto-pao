@@ -12,14 +12,23 @@
 #include "FlowLayout.h"
 #include "PreviewWindow.h"
 
+typedef Katalog::vector<Katalog::DeepPtr<Katalog::BaseNode>> FileList;
+
 class GridView : public QWidget
 {
     Q_OBJECT
 public:
-    explicit GridView(Katalog::vector<Katalog::DeepPtr<Katalog::BaseNode>> fileVector,QWidget *parent = nullptr);
+    explicit GridView(const FileList &fileVector,QWidget *parent = nullptr);
     virtual ~GridView() = default;
-signals:
+public slots:
+    void redrawGrid();
 
+signals:
+    void doubleClickedItem(Katalog::BaseNode*);
+
+private:
+    const FileList &files;
+    FlowLayout* grid;
 };
 
 #endif // GRIDVIEW_H

@@ -14,12 +14,14 @@
 #include <DeselectableTreeView.h>
 #include <QShortcut>
 #include <QFileDialog>
+#include <GridView.h>
 
 #include <BaseNode.h>
 
 class Controller;
 
 typedef Katalog::vector<std::string> PathList;
+typedef Katalog::vector<Katalog::DeepPtr<Katalog::BaseNode>> FileList;
 
 class MainWindow : public QWidget
 {
@@ -29,10 +31,12 @@ public:
     void setController(Controller *c);
     void updateTree(const Katalog::BaseNode* root);
     void clearTree();
+    void showGrid(const FileList& files);
 
 private:
     DeselectableTreeView *catalogView;
     QWidget *screen;
+    QHBoxLayout *screenLayout;
 
     //menu actions
     QAction *SaveAction;
@@ -53,6 +57,7 @@ private slots:
     void addPhoto();
     void addAudio();
     void addVideo();
+    void doubleClickOnGridItem(Katalog::BaseNode*);
 };
 
 #endif // MAINWINDOW_H

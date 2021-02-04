@@ -6,14 +6,20 @@
 #ifndef DESELECTABLETREEVIEW_H
 #define DESELECTABLETREEVIEW_H
 
+#include <QObject>
+
 #include <QTreeWidget>
 #include <QMouseEvent>
 
 class DeselectableTreeView: public QTreeWidget
 {
+Q_OBJECT
 public:
-    DeselectableTreeView(QWidget *parent);
-    ~DeselectableTreeView();
+    explicit DeselectableTreeView(QWidget *parent);
+    ~DeselectableTreeView() = default;
+
+signals:
+    void itemsDeselected();
 
 private:
     virtual void mousePressEvent(QMouseEvent *event);

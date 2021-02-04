@@ -12,6 +12,11 @@
 #include "Video.h"
 #include "Audio.h"
 
+#include <QPainter>
+#include <QStyleOption>
+#include <QMouseEvent>
+#include <sstream>
+
 /*
  * View per mostrare l'anteprima del file aggiunto: cambia a seconda del tipo del file inserito.
  */
@@ -26,9 +31,16 @@ public:
      * @param parent: è il parent del widget
      */
     explicit PreviewWindow(Katalog::BaseNode* sel_file, QWidget *parent);
-
+    ~PreviewWindow() = default;
+private:
+    void enterEvent(QEvent *event);
+    void leaveEvent(QEvent *event);
+    void paintEvent(QPaintEvent *event);
+    void mouseDoubleClickEvent(QMouseEvent *event);
+    QColor defaultColor;
+    Katalog::BaseNode *filePtr;
 signals:
-
+    void mouseDoubleClicked(Katalog::BaseNode*);
 };
 
 #endif // PREVIEWWINDOW_H

@@ -1,5 +1,11 @@
 #include "IOManager.h"
 
+//debug stuf
+#include <iostream>
+using std::cout;
+using std::endl;
+//end debug stuff
+
 using namespace Katalog;
 
 void IOManager::exportCatalogToFile(Katalog::Catalogo &catalogo, std::string pathToXmlFile)
@@ -92,7 +98,7 @@ QDomElement IOManager::createCreateElement(QDomDocument &doc, NodePtr &node)
             dynamic_cast<Katalog::Video*>(node.pointer()) != 0;
     QDomElement el = doc.createElement(file ? "KFile" : "KDirectory");
     el.setAttribute("Name", QString::fromStdString(node->getName()));
-    el.setAttribute("IsOpen", QString::fromStdString(node->isOpen() ? "True" : "False"));
+    el.setAttribute("IsOpen", QString::fromStdString((node->isOpen() ? "True" : "False")));
     if(file){
         QString type;
         if(dynamic_cast<Katalog::Photo*>(node.pointer())) type = "KPhoto";
@@ -127,9 +133,10 @@ BaseNode* IOManager::readNodeInfo(QDomNode &node){
         }
     } else
         throw std::runtime_error("Formato file errato");
-    if(node.toElement().attribute("IsOpen").toStdString() == "True") {
+    if(node.toElement().attribute("IsOpen").toStdString() == "True")
         ptr->open();
-    }
+    else
+        ptr->close();
     if(node.hasChildNodes() && node.firstChildElement("Childs").isElement()){
         QDomNode childs = node.firstChildElement("Childs");
         for(int i = 0; i < childs.childNodes().count(); i++){

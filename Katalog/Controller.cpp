@@ -15,6 +15,7 @@ Controller::Controller(Katalog::Catalogo &cat, MainWindow &mw, QObject *parent) 
     try{
         catalogo = Katalog::IOManager::importCatalogFromFile("Katalog.xml");
         mainwindow.updateTree(catalogo.getRoot().pointer());
+        mainwindow.showGrid(catalogo.getRoot()->getFiles());
     }catch (std::runtime_error &e){
         QMessageBox m(QMessageBox::Critical, "Errore lettura catalog", e.what(), QMessageBox::Cancel);
     }
@@ -27,6 +28,7 @@ void Controller::addFile(Katalog::BaseNode *file, std::string destination)
 {
     catalogo.add(file, destination);
     mainwindow.updateTree(catalogo.getRoot().pointer());
+    emit catalogUpdated();
 }
 
 void Controller::saveCatalog()
@@ -45,6 +47,19 @@ void Controller::closeDirectory(QTreeWidgetItem *node)
 {
     std::string path = getItemPath(node);
     catalogo.setFileAsClosed(path);
+}
+
+void Controller::treeItemClicked(QTreeWidgetItem *item, int col)
+{
+    Katalog::BaseNode* file = catalogo.getFile(getItemPath(item));
+    if(file->getFilesCount()){
+        mainwindow.showGrid(file->getFiles());
+    }
+}
+
+void Controller::viewGridOnRoot()
+{
+    mainwindow.showGrid(catalogo.getRoot()->getFiles());
 }
 
 std::string Controller::getItemPath(QTreeWidgetItem *item)
