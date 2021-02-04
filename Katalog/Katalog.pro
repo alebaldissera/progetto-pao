@@ -14,30 +14,36 @@ SOURCES += \
     Controller.cpp \
     DeselectableTreeView.cpp \
     Directory.cpp \
+    FlowLayout.cpp \
+    GridView.cpp \
     IOManager.cpp \
     LoadingView.cpp \
     MainWindow.cpp \
     Photo.cpp \
     Audio.cpp \
+    PlayWindow.cpp \
+    PreviewWindow.cpp \
     Video.cpp \
-    main.cpp \
-    previewwindow.cpp
+    main.cpp
 
 HEADERS += \
     Controller.h \
     DeepPtr.h \
     DeselectableTreeView.h \
+    FlowLayout.h \
+    GridView.h \
     IOManager.h \
     LoadingView.h \
     MainWindow.h \
+    PlayWindow.h \
+    PreviewWindow.h \
     Vector.h \
     Catalogo.h \
     BaseNode.h \
     Directory.h \
     Photo.h \
     Audio.h \
-    Video.h \
-    previewwindow.h
+    Video.h
 
 
 # Default rules for deployment.

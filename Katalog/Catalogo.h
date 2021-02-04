@@ -73,7 +73,18 @@ public:
      * @return true se è avvenuta una modifica ai file, false altrimenti
      */
     bool isChanged();
-
+    /**
+     * @brief getFile: ritorna il nodo indicato dalla path inserita
+     * @param path_file: path del file di cui ritornarne il nodo
+     * @return BaseNode* è il nodo indicato dalla path_file
+     */
+    BaseNode* getFile(std::string path_file);
+    /**
+     * @brief setFileName: permette di modificare il nome del file indicato dalla path inserita
+     * @param path_file: percorso del file di cui modificarne il nome
+     * @param name: nome desiderato per la rinomina del file
+     */
+    void setFileName(std::string path_file, std::string name);
 };
 
 }

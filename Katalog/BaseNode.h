@@ -33,7 +33,7 @@ public:
      * @return puntatore alla classe derivata copiata
      */
     virtual BaseNode* clone() const = 0;
-	/**
+    /**
      * @brief getName: ritorna il nome del file/directory
      * @return string
      */
@@ -47,12 +47,12 @@ public:
      * @brief setName: permette la rinomina del file/directory
      */
     void setName(string &_nome);
-    /** 
+    /**
      * @brief getFilesCount: ritorna il numero dei file presenti nella directory
      * @return int
      */
     int getFilesCount() const;
-	/**
+    /**
      * @brief addFile: permette di aggiungere un file alla directory
      */
     void addFile(BaseNode* insert_file);

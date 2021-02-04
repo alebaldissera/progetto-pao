@@ -14,13 +14,17 @@
 
 /*
  * View per mostrare l'anteprima del file aggiunto: cambia a seconda del tipo del file inserito.
- * Pensata per essere gestita completamente dal controller
  */
 
 class PreviewWindow : public QWidget
 {
     Q_OBJECT
 public:
+    /**
+     * @brief PreviewWindow: mostra l'anteprima del file a seconda del tipo del file
+     * @param sel_file: è il file selezionato dall'utente
+     * @param parent: è il parent del widget
+     */
     explicit PreviewWindow(Katalog::BaseNode* sel_file, QWidget *parent);
 
 signals:

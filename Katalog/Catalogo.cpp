@@ -105,5 +105,17 @@ bool Catalogo::isChanged()
     return isModified;
 }
 
+BaseNode *Catalogo::getFile(std::string path_file)
+{
+    return regex_fun(path_file);
+}
+
+void Catalogo::setFileName(std::string path_file, std::string name)
+{
+    regex_fun(path_file)->setName(name);
+}
+
+
+
 
 
