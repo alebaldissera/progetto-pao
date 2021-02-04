@@ -72,11 +72,6 @@ public:
      */
     virtual long getAllSize() const = 0;
     /**
-     * @brief getIcon: ritona la path ad una risorsa che specifica un'icona generica per il tipo di file
-     * @return string
-     */
-    virtual string getIcon() const = 0;
-    /**
       * @brief getFiles: ritorna un riferimento costante alla lista dei file contenuti nel nodo
       * @return Katalog::vector<Katalog::DeepPtr<Katalog::BaseNode>>
       */

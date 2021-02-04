@@ -27,11 +27,6 @@ long Katalog::Directory::getAllSize() const
 	return getSize();
 }
 
-string Katalog::Directory::getIcon() const 
-{
-    return "/icons/string.ico";	//path da cui prelevare l'icona generica della cartella
-}
-
 std::string Directory::getInfo() const
 {
     std::stringstream s;

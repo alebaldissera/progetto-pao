@@ -46,7 +46,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent), controller(nullptr)
 void MainWindow::setController(Controller *c)
 {
     controller = c;
-    connect(this, SIGNAL(addFile(Katalog::BaseNode*, std::string)), controller, SLOT(addFile(Katalog::BaseNode*, std::string)));
+    connect(this, SIGNAL(addFile(Katalog::BaseNode*,std::string)), controller, SLOT(addFile(Katalog::BaseNode*,std::string)));
     connect(SaveAction, SIGNAL(triggered(bool)), controller, SLOT(saveCatalog()));
 }
 
@@ -57,6 +57,7 @@ void MainWindow::updateTree(const Katalog::BaseNode *root)
     auto &files = root->getFiles();
     for(auto i = files.begin(); i != files.end(); i++){
         QTreeWidgetItem *item = new QTreeWidgetItem(catalogView);
+        setTreeWidgetItemIcon(item, files[i].pointer());
         item->setText(0, QString::fromStdString(files[i]->getName()));
         if(files[i]->getFilesCount() > 0){
             updateTreeRecursive(files[i].pointer(), item);
@@ -161,6 +162,7 @@ void MainWindow::updateTreeRecursive(const Katalog::BaseNode *root, QTreeWidgetI
     for(auto i = files.begin(); i != files.end(); i++){
         QTreeWidgetItem *item = new QTreeWidgetItem(itemParent);;
         item->setText(0, QString::fromStdString(files[i]->getName()));
+        setTreeWidgetItemIcon(item, files[i].pointer());
         if(files[i]->getFilesCount() > 0){
             updateTreeRecursive(files[i].pointer(), item);
         }
@@ -184,6 +186,18 @@ std::string MainWindow::getSelectedFilePath() const
         }
     }
     return destination;
+}
+
+void MainWindow::setTreeWidgetItemIcon(QTreeWidgetItem *item, Katalog::BaseNode* file)
+{
+    if(dynamic_cast<Katalog::Photo*>(file))
+        item->setIcon(0, QIcon(":/Icons/image-gallery.svg"));
+    else if(dynamic_cast<Katalog::Audio*>(file))
+        item->setIcon(0, QIcon(":/Icons/speaker.svg"));
+    else if(dynamic_cast<Katalog::Video*>(file))
+        item->setIcon(0, QIcon(":/Icons/video.svg"));
+    else
+        item->setIcon(0, QIcon(":/Icons/folder.svg"));
 }
 
 void MainWindow::addPhoto()

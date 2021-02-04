@@ -41,6 +41,7 @@ private:
     void updateTreeRecursive(const Katalog::BaseNode* root, QTreeWidgetItem *itemParent);
     static std::string getFileName(std::string &sou0rce);
     std::string getSelectedFilePath() const;
+    void setTreeWidgetItemIcon(QTreeWidgetItem *item, Katalog::BaseNode* file);
 
 signals:
     void addFile(Katalog::BaseNode*, std::string destination);

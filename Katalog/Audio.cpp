@@ -28,11 +28,6 @@ long Katalog::Audio::getAllSize() const
 	return getSize() + Directory::getAllSize();
 }
 
-string Katalog::Audio::getIcon() const
-{
-    return "/icons/audio.h";
-}
-
 std::string Katalog::Audio::getInfo() const
 {
     std::stringstream s;

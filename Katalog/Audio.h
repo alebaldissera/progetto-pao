@@ -17,7 +17,6 @@ namespace Katalog {
         Audio* clone() const override;
         long getSize() const override; //possibile integrazione con un getSize() const per ottimizzare
         long getAllSize() const override;
-        string getIcon() const override;
         string getInfo() const override;
     private:
         int bitrate;
