@@ -19,6 +19,7 @@
 #include <VideoPlayer.h>
 
 #include <BaseNode.h>
+#include <LoadingView.h>
 
 class Controller;
 
@@ -33,7 +34,7 @@ public:
     void setController(Controller *c);
     void updateTree(const Katalog::BaseNode* root);
     void clearTree();
-    void showGrid(const FileList& files);
+    void showGrid(const FileList* files);
     void showPlayWindow(const FileList& files);
 
 private:

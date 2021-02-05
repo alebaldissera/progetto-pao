@@ -14,6 +14,10 @@ PreviewWindow::PreviewWindow(Katalog::BaseNode* sel_file, QWidget *parent) : QWi
 
     QLabel *icon = new QLabel(this);
     QLabel *namefile = new QLabel(QString::fromStdString(sel_file->getName()), this);
+
+    icon->setStyleSheet("background-color: rgba(0,0,0,0);");
+    namefile->setStyleSheet("background-color: rgba(0,0,0,0);");
+
     namefile->setMaximumWidth(75);
     namefile->setMaximumHeight(200);
     namefile->setAlignment(Qt::AlignLeft);
@@ -52,7 +56,7 @@ PreviewWindow::PreviewWindow(Katalog::BaseNode* sel_file, QWidget *parent) : QWi
 void PreviewWindow::enterEvent(QEvent *event)
 {
     std::stringstream ss;
-    ss << "background-color: rgba(" << defaultColor.red() << ","  << defaultColor.green() * 1.50 << "," << defaultColor.blue() * 1.75 << "," << defaultColor.alpha() << ")";
+    ss << "background-color: rgba(0, 126, 232, 0.60)";
     setStyleSheet(QString::fromStdString(ss.str()));
     QWidget::enterEvent(event);
 }
@@ -60,7 +64,7 @@ void PreviewWindow::enterEvent(QEvent *event)
 void PreviewWindow::leaveEvent(QEvent *event)
 {
     std::stringstream ss;
-    ss << "background-color: rgba(" << defaultColor.red() << ","  << defaultColor.green() << "," << defaultColor.blue() << "," << defaultColor.alpha() << ")";
+    ss << "background-color: rgba(0, 126, 232, 0)";
     setStyleSheet(QString::fromStdString(ss.str()));
     QWidget::enterEvent(event);
 }

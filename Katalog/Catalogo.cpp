@@ -19,7 +19,7 @@ BaseNode* Catalogo::regex_fun(string path)
     if(path == "/"){
         return node;
     }
-    std::regex rgx ("(?:/)([\\w\\-\\ {}()@#§+=&%$£!\\.]+)");
+    std::regex rgx ("(?:/)([\\w\\-\\s\\{\\}\\(\\)\\[\\]@#§\\+=_&%$£!\\.àèéìòù]+)");
     std::smatch match;
     while(std::regex_search(path, match, rgx)){
             std::string matched = match[1].str();
@@ -36,7 +36,7 @@ BaseNode* Catalogo::regex_fun(string path)
 DeepPtr<BaseNode> Catalogo::remove_aux(std::string path_file_to_remove)
 {
     BaseNode* node_aux = root.pointer();
-    std::regex rgx ("(?:/)([\\w\\-\\ {}()@#§+=&%$£!\\.]");
+    std::regex rgx ("(?:/)([\\w\\-\\s\\{\\}\\(\\)\\[\\]@#§\\+=_&%$£!\\.àèéìòù]+)");
     std::smatch match;
     while(std::regex_search(path_file_to_remove, match, rgx)){
         if(match[0].str() == path_file_to_remove)

@@ -20,6 +20,7 @@ class LoadingView : public QWidget
     Q_OBJECT
 public:
     explicit LoadingView(QWidget *parent = nullptr);
+    ~LoadingView() = default;
 
 signals:
 

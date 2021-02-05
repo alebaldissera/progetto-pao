@@ -81,7 +81,7 @@ void MainWindow::clearTree()
     catalogView->clear();
 }
 
-void MainWindow::showGrid(const FileList &files)
+void MainWindow::showGrid(const FileList *files)
 {
     screen->close(); //gridview ha il flag WA_DeleteOnClose impostato a true quindi il widget viene distrutto quando viene chiuso, dunque non è necessaria una delete
     screenLayout->removeWidget(screen);
@@ -92,6 +92,7 @@ void MainWindow::showGrid(const FileList &files)
     screenLayout->addWidget(screen);
     connect(screen, SIGNAL(doubleClickedItem(Katalog::BaseNode*)), this, SLOT(doubleClickOnGridItem(Katalog::BaseNode*)));
     connect(controller, SIGNAL(catalogUpdated()), screen, SLOT(redrawGrid()));
+    static_cast<GridView*>(screen)->redrawGrid();
 }
 
 void MainWindow::showPlayWindow(const FileList &files)
@@ -303,7 +304,7 @@ void MainWindow::addDirectory()
 void MainWindow::doubleClickOnGridItem(Katalog::BaseNode *file)
 {
     if(file->getFilesCount() > 0)
-        showGrid(file->getFiles());
+        showGrid(&file->getFiles());
 }
 
 void MainWindow::copy()

@@ -81,11 +81,11 @@ void IOManager::populateXmlDocument(QDomDocument &doc, QDomElement &element, Nod
 {
     auto files = node->getFiles();
     QDomElement el = createCreateElement(doc, node); //creo me stesso
-    for(auto i = files.begin(); i != files.end(); i++){
+    if(files.size() > 0){
         QDomElement childs = doc.createElement("Childs");
-
-        populateXmlDocument(doc, childs, files[i]); //chiamata ricorsiva sui figli
-
+        for(auto i = files.begin(); i != files.end(); i++){
+            populateXmlDocument(doc, childs, files[i]);
+        }
         el.appendChild(childs);
     }
     element.appendChild(el);
