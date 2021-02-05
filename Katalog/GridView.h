@@ -18,7 +18,7 @@ class GridView : public QWidget
 {
     Q_OBJECT
 public:
-    explicit GridView(const FileList &fileVector,QWidget *parent = nullptr);
+    explicit GridView(const FileList &fileVector, QWidget *parent = nullptr);
     virtual ~GridView() = default;
 public slots:
     void redrawGrid();

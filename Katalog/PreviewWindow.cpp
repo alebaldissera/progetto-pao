@@ -14,7 +14,10 @@ PreviewWindow::PreviewWindow(Katalog::BaseNode* sel_file, QWidget *parent) : QWi
 
     QLabel *icon = new QLabel(this);
     QLabel *namefile = new QLabel(QString::fromStdString(sel_file->getName()), this);
-    namefile->setAlignment(Qt::AlignHCenter);
+    namefile->setMaximumWidth(75);
+    namefile->setMaximumHeight(200);
+    namefile->setAlignment(Qt::AlignLeft);
+
 
     if (sel_file == dynamic_cast<Katalog::Audio*>(sel_file))
     {

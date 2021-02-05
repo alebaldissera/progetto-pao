@@ -19,7 +19,7 @@ BaseNode* Catalogo::regex_fun(string path)
     if(path == "/"){
         return node;
     }
-    std::regex rgx ("(?:/)([a-zA-Z0-9\\.\\s]+)");
+    std::regex rgx ("(?:/)([\\w\\-\\ {}()@#§+=&%$£!\\.]+)");
     std::smatch match;
     while(std::regex_search(path, match, rgx)){
             std::string matched = match[1].str();
@@ -36,7 +36,7 @@ BaseNode* Catalogo::regex_fun(string path)
 DeepPtr<BaseNode> Catalogo::remove_aux(std::string path_file_to_remove)
 {
     BaseNode* node_aux = root.pointer();
-    std::regex rgx ("(?:/)([a-zA-Z0-9\\.\\s]+)");
+    std::regex rgx ("(?:/)([\\w\\-\\ {}()@#§+=&%$£!\\.]");
     std::smatch match;
     while(std::regex_search(path_file_to_remove, match, rgx)){
         if(match[0].str() == path_file_to_remove)
@@ -76,7 +76,12 @@ void Catalogo::remove(std::string file_to_remove)
 void Catalogo::move(string path_start, string path_end)
 {
     isModified = true;
-    add(remove_aux(path_start).pointer()->clone(), path_end);
+    if(path_start != path_end)
+    {
+        add(remove_aux(path_start).pointer()->clone(), path_end);
+    }
+    else
+        throw std::runtime_error("Impossibile spostare il file nella stessa cartella");
 }
 
 long Catalogo::getSize()

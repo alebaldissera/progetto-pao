@@ -94,6 +94,18 @@ void MainWindow::showGrid(const FileList &files)
     connect(controller, SIGNAL(catalogUpdated()), screen, SLOT(redrawGrid()));
 }
 
+void MainWindow::showPlayWindow(const FileList &files)
+{
+     screen->close();
+     screenLayout->removeWidget(screen);
+     screen = new VideoPlayer(files);
+     QSizePolicy widgetPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+     widgetPolicy.setHorizontalStretch(3);
+     screen->setSizePolicy(widgetPolicy);
+     screenLayout->addWidget(screen);
+     //connect(screen, SIGNAL(doubleClickedItem(Katalog::BaseNode*)), this, SLOT());
+}
+
 void MainWindow::addMenus(QLayout *layout)
 {
     QMenuBar *MenuBar = new QMenuBar(this);

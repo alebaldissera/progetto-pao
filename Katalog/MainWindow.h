@@ -16,6 +16,7 @@
 #include <QFileDialog>
 #include <GridView.h>
 #include <QInputDialog>
+#include <VideoPlayer.h>
 
 #include <BaseNode.h>
 
@@ -33,6 +34,7 @@ public:
     void updateTree(const Katalog::BaseNode* root);
     void clearTree();
     void showGrid(const FileList& files);
+    void showPlayWindow(const FileList& files);
 
 private:
     DeselectableTreeView *catalogView;
@@ -71,6 +73,7 @@ private slots:
     void addVideo();
     void addDirectory();
     void doubleClickOnGridItem(Katalog::BaseNode*);
+    //void doubleClickToPlayItem(Katalog::BaseNode*);
     void copy();
     void cut();
     void paste();

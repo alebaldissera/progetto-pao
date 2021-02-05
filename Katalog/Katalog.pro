@@ -1,4 +1,4 @@
-QT       += core gui multimedia xml
+QT       += core gui multimedia multimediawidgets xml
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -21,9 +21,9 @@ SOURCES += \
     MainWindow.cpp \
     Photo.cpp \
     Audio.cpp \
-    PlayWindow.cpp \
     PreviewWindow.cpp \
     Video.cpp \
+    VideoPlayer.cpp \
     main.cpp
 
 HEADERS += \
@@ -35,7 +35,6 @@ HEADERS += \
     IOManager.h \
     LoadingView.h \
     MainWindow.h \
-    PlayWindow.h \
     PreviewWindow.h \
     Vector.h \
     Catalogo.h \
@@ -43,7 +42,8 @@ HEADERS += \
     Directory.h \
     Photo.h \
     Audio.h \
-    Video.h
+    Video.h \
+    VideoPlayer.h
 
 
 # Default rules for deployment.
