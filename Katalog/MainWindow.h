@@ -15,6 +15,7 @@
 #include <QShortcut>
 #include <QFileDialog>
 #include <GridView.h>
+#include <QInputDialog>
 
 #include <BaseNode.h>
 
@@ -52,12 +53,29 @@ private:
 
 signals:
     void addFile(Katalog::BaseNode*, std::string destination);
+    void fileCopied(std::string);
+    void fileCutted(std::string);
+    void filePasted(std::string);
+    void fileRemoved(std::string);
+    void fileRenamed(std::string, std::string);
 
 private slots:
+    /*
+     * Abbiamo scelto di usare 3 slot differenti per importare i file, e gestire la creazione
+     * per ogni tipo con la view per rendere trasparente la differenza di file al controller
+     * Questa scelta arriva dalla possibilità di inserire nuovi tipi di file alla gerarchia e quindi
+     * non gestendo le differenze dei file a livello di controller, l'aggiunta di nuovi tipi sarà più veloce
+     */
     void addPhoto();
     void addAudio();
     void addVideo();
+    void addDirectory();
     void doubleClickOnGridItem(Katalog::BaseNode*);
+    void copy();
+    void cut();
+    void paste();
+    void remove();
+    void rename();
 };
 
 #endif // MAINWINDOW_H

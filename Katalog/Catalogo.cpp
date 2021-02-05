@@ -42,7 +42,7 @@ DeepPtr<BaseNode> Catalogo::remove_aux(std::string path_file_to_remove)
         if(match[0].str() == path_file_to_remove)
         {
             std::string matchstr = match[1].str();
-            return node_aux->getFileByName(matchstr).pointer();
+            return node_aux->removeFile(node_aux->getFileByName(matchstr).pointer());
         }
         else{
             std::string matched = match[1].str();
@@ -70,13 +70,13 @@ void Catalogo::add(BaseNode* ins_filename, std::string path_final_dir)
 void Catalogo::remove(std::string file_to_remove)
 {
     isModified = true;
-    remove_aux(file_to_remove).pointer();
+    remove_aux(file_to_remove);
 }
 
 void Catalogo::move(string path_start, string path_end)
 {
     isModified = true;
-    add(remove_aux(path_start).pointer(), path_end);
+    add(remove_aux(path_start).pointer()->clone(), path_end);
 }
 
 long Catalogo::getSize()
@@ -113,6 +113,11 @@ void Catalogo::setFileAsOpened(string &path)
 BaseNode *Catalogo::getFile(std::string path_file)
 {
     return regex_fun(path_file);
+}
+
+void Catalogo::setFileName(string path_file, string name)
+{
+    regex_fun(path_file)->setName(name);
 }
 
 void Catalogo::setFileAsClosed(string &path)

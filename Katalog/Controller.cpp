@@ -62,6 +62,54 @@ void Controller::viewGridOnRoot()
     mainwindow.showGrid(catalogo.getRoot()->getFiles());
 }
 
+void Controller::copyFile(std::string file)
+{
+    clip = file;
+    operation = true;
+}
+
+void Controller::cutFile(std::string file)
+{
+    clip = file;
+    operation = false;
+}
+
+void Controller::pasteFile(std::string dest)
+{
+    if(clip != ""){
+        if(operation) //copia
+        {
+            auto* file = catalogo.getFile(clip);
+            catalogo.add(file->clone(), dest);
+        }
+        else
+        {
+            catalogo.move(clip, dest);
+        }
+        clip = "";
+        mainwindow.updateTree(catalogo.getRoot().pointer());
+        emit catalogUpdated();
+    }
+}
+
+void Controller::removeFile(std::string file)
+{
+    try {
+        catalogo.remove(file);
+        mainwindow.updateTree(catalogo.getRoot().pointer());
+        emit catalogUpdated();
+    } catch (std::runtime_error &e){
+        cout << e.what() << endl;
+    }
+}
+
+void Controller::renameFile(std::string file, std::string newName)
+{
+    catalogo.setFileName(file, newName);
+    mainwindow.updateTree(catalogo.getRoot().pointer());
+    emit catalogUpdated();
+}
+
 std::string Controller::getItemPath(QTreeWidgetItem *item)
 {
     string path = "/" + item->text(0).toStdString();

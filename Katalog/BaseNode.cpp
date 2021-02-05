@@ -30,7 +30,7 @@ void BaseNode::addFile(BaseNode* insert_file)
 {
 	for (u_int i = 0; i < files.size(); i++)
 	{
-        if (&(*files[i]) == insert_file) //penso basti ma è da controllare
+        if (files[i]->getName() == insert_file->getName())
 			return;
 	}
 	files.push_back(insert_file);
@@ -40,7 +40,7 @@ DeepPtr<BaseNode> BaseNode::removeFile(BaseNode* file_to_remove)
 {
     for (auto i = files.begin(); i != files.end(); i++)
     {   
-        if (&(*files[i]) == file_to_remove)
+        if (files[i]->getName() == file_to_remove->getName())
         {
             DeepPtr<BaseNode> retPtr = files[i];
 			files.erase(i, i + 1);

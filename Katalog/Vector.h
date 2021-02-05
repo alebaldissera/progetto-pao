@@ -302,11 +302,11 @@ template<class T>
 void vector<T>::erase(vector::iterator first, vector::iterator last)
 {
     if(last == end()){
-        lsize = first.offset + 1;
+        lsize = first.offset;
         return;
     }
     for(; last != end(); ++last, ++first){
-        *first = *last;
+        list[first.offset] = list[last.offset];
     }
     lsize = first.offset;
 }

@@ -31,11 +31,19 @@ public slots:
     void closeDirectory(QTreeWidgetItem *node);
     void treeItemClicked(QTreeWidgetItem*,int);
     void viewGridOnRoot();
+    void copyFile(std::string);
+    void cutFile(std::string);
+    void pasteFile(std::string);
+    void removeFile(std::string);
+    void renameFile(std::string, std::string);
 
 private:
     Katalog::Catalogo &catalogo;
     MainWindow &mainwindow;
     static std::string getItemPath(QTreeWidgetItem* item);
+
+    std::string clip;
+    bool operation; //true copia, false taglia
 
 };
 

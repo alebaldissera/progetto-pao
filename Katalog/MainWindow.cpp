@@ -52,6 +52,11 @@ void MainWindow::setController(Controller *c)
     connect(catalogView, SIGNAL(itemCollapsed(QTreeWidgetItem*)), controller, SLOT(closeDirectory(QTreeWidgetItem*)));
     connect(catalogView, SIGNAL(itemClicked(QTreeWidgetItem*,int)), controller, SLOT(treeItemClicked(QTreeWidgetItem*,int)));
     connect(catalogView, SIGNAL(itemsDeselected()), controller, SLOT(viewGridOnRoot()));
+    connect(this, SIGNAL(fileCopied(std::string)), controller, SLOT(copyFile(std::string)));
+    connect(this, SIGNAL(fileCutted(std::string)), controller, SLOT(cutFile(std::string)));
+    connect(this, SIGNAL(filePasted(std::string)), controller, SLOT(pasteFile(std::string)));
+    connect(this, SIGNAL(fileRemoved(std::string)), controller, SLOT(removeFile(std::string)));
+    connect(this, SIGNAL(fileRenamed(std::string,std::string)), controller, SLOT(renameFile(std::string,std::string)));
 }
 
 void MainWindow::updateTree(const Katalog::BaseNode *root)
@@ -92,7 +97,7 @@ void MainWindow::showGrid(const FileList &files)
 void MainWindow::addMenus(QLayout *layout)
 {
     QMenuBar *MenuBar = new QMenuBar(this);
-    layout->addWidget(MenuBar);
+    layout->setMenuBar(MenuBar);
 
     //File menu
     QMenu *FileMenu = new QMenu("File", MenuBar);
@@ -101,7 +106,7 @@ void MainWindow::addMenus(QLayout *layout)
     QAction *ImportPhoto = new QAction("Importa foto", MenuBar);
     QAction *ImportAudio = new QAction("Importa audio", MenuBar);
     QAction *ImportVideo = new QAction("Importa video", MenuBar);
-
+    QAction *CreateDirectory = new QAction("Crea cartella", MenuBar);
 
     ImportPhoto->setShortcut(QKeySequence("Ctrl+I"));
     ImportPhoto->setShortcutVisibleInContextMenu(true);
@@ -109,14 +114,18 @@ void MainWindow::addMenus(QLayout *layout)
     ImportAudio->setShortcutVisibleInContextMenu(true);
     ImportVideo->setShortcut(QKeySequence("Ctrl+M"));
     ImportVideo->setShortcutVisibleInContextMenu(true);
+    CreateDirectory->setShortcut(QKeySequence("Ctrl+N"));
+    CreateDirectory->setShortcutVisibleInContextMenu(true);
 
     FileMenu->addAction(ImportPhoto);
     FileMenu->addAction(ImportAudio);
     FileMenu->addAction(ImportVideo);
+    FileMenu->addAction(CreateDirectory);
 
     connect(ImportPhoto, SIGNAL(triggered(bool)), this, SLOT(addPhoto()));
     connect(ImportAudio, SIGNAL(triggered(bool)), this, SLOT(addAudio()));
     connect(ImportVideo, SIGNAL(triggered(bool)), this, SLOT(addVideo()));
+    connect(CreateDirectory, SIGNAL(triggered(bool)), this, SLOT(addDirectory()));
 
     FileMenu->addSeparator();
     SaveAction = new QAction("Salva catalogo", FileMenu);
@@ -144,6 +153,7 @@ void MainWindow::addMenus(QLayout *layout)
     QAction *PasteAction = new QAction("Incolla", EditMenu);
     QAction *CutAction = new QAction("Taglia", EditMenu);
     QAction *RemoveAction = new QAction("Elimina", EditMenu);
+    QAction *RenameAction = new QAction("Rinomina", EditMenu);
 
     CopyAction->setShortcut(QKeySequence("Ctrl+C"));
     CopyAction->setShortcutVisibleInContextMenu(true);
@@ -153,11 +163,20 @@ void MainWindow::addMenus(QLayout *layout)
     PasteAction->setShortcutVisibleInContextMenu(true);
     RemoveAction->setShortcut(QKeySequence("Delete"));
     RemoveAction->setShortcutVisibleInContextMenu(true);
+    RenameAction->setShortcut(QKeySequence("F2"));
+    RenameAction->setShortcutVisibleInContextMenu(true);
 
     EditMenu->addAction(CopyAction);
     EditMenu->addAction(PasteAction);
     EditMenu->addAction(CutAction);
     EditMenu->addAction(RemoveAction);
+    EditMenu->addAction(RenameAction);
+
+    connect(CopyAction, SIGNAL(triggered(bool)), this, SLOT(copy()));
+    connect(CutAction, SIGNAL(triggered(bool)), this, SLOT(cut()));
+    connect(PasteAction, SIGNAL(triggered(bool)), this, SLOT(paste()));
+    connect(RemoveAction, SIGNAL(triggered(bool)), this, SLOT(remove()));
+    connect(RenameAction, SIGNAL(triggered(bool)), this, SLOT(rename()));
 
     //end edit menu
 
@@ -260,9 +279,56 @@ void MainWindow::addVideo()
     }
 }
 
+void MainWindow::addDirectory()
+{
+    std::string name = QInputDialog::getText(this, "Crea cartella", "Nome nuova cartella: ").toStdString();
+    if(name != ""){
+        std::string destination = getSelectedFilePath();
+        emit addFile(new Katalog::Directory(name), destination);
+    }
+}
+
 void MainWindow::doubleClickOnGridItem(Katalog::BaseNode *file)
 {
     if(file->getFilesCount() > 0)
         showGrid(file->getFiles());
+}
+
+void MainWindow::copy()
+{
+    std::string dest = getSelectedFilePath();
+    if(dest != "/")
+        emit fileCopied(dest);
+}
+
+void MainWindow::cut()
+{
+    std::string dest = getSelectedFilePath();
+    if(dest != "/")
+        emit fileCutted(dest);
+}
+
+void MainWindow::paste()
+{
+    emit filePasted(getSelectedFilePath());
+}
+
+void MainWindow::remove()
+{
+    std::string dest = getSelectedFilePath();
+    if(dest != "/")
+        emit fileRemoved(dest);
+}
+
+void MainWindow::rename()
+{
+    std::string destination = getSelectedFilePath();
+    if(destination != "/"){
+        std::string name = QInputDialog::getText(this, "Rinomina", "Nuovo nome: ").toStdString();
+        if(name != ""){
+            emit fileRenamed(destination, name);
+        }
+    }
+
 }
 
