@@ -18,7 +18,11 @@ Katalog::Photo::Photo(string _name, string _path): Directory(_name, _path)
     camera += " ";
     camera += player->metaData(QMediaMetaData::CameraModel).String;
     if(camera == "\n \n") camera = "N/D";
-    size = std::filesystem::file_size(getPath());
+    QFile f(QString::fromStdString(getPath()));
+    if(f.open(QFile::ReadOnly)){
+        size = f.size();
+        f.close();
+    }
 }
 
 Katalog::Photo* Katalog::Photo::clone() const

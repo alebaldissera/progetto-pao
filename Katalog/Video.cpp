@@ -11,7 +11,11 @@ Katalog::Video::Video(string _name, string _path): Directory(_name, _path)
     framerate = player->metaData(QMediaMetaData::VideoFrameRate).Double;
     titolo = player->metaData(QMediaMetaData::Title).String;
     autore = player->metaData(QMediaMetaData::Author).String;
-    size = std::filesystem::file_size(getPath());
+    QFile f(QString::fromStdString(getPath()));
+    if(f.open(QFile::ReadOnly)){
+        size = f.size();
+        f.close();
+    }
 }
 
 Katalog::Video* Katalog::Video::clone() const

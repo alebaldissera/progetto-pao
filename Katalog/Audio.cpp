@@ -10,7 +10,11 @@ Katalog::Audio::Audio(string _name, string _path): Directory(_name, _path)
     codec = player->metaData(QMediaMetaData::AudioCodec).String;
     titolo = player->metaData(QMediaMetaData::Title).String;
     autore = player->metaData(QMediaMetaData::Author).String;
-    size = std::filesystem::file_size(getPath());
+    QFile f(QString::fromStdString(getPath()));
+    if(f.open(QFile::ReadOnly)){
+        size = f.size();
+        f.close();
+    }
 }
 
 Katalog::Audio* Katalog::Audio::clone() const

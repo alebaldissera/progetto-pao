@@ -119,7 +119,7 @@ BaseNode* IOManager::readNodeInfo(QDomNode &node){
         std::string fileType = node.toElement().attribute("FileType").toStdString();
         std::string name = node.toElement().attribute("Name").toStdString();
         std::string pathToDisk = node.toElement().attribute("PathToDisk").toStdString();
-        if(!std::filesystem::exists(pathToDisk))
+        if(!QFile::exists(QString::fromStdString(pathToDisk)))
             ptr = new Directory(name);
         else {
             if(fileType == "KPhoto")
