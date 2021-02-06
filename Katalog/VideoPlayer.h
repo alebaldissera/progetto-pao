@@ -38,6 +38,7 @@ class VideoPlayer : public QWidget
     Q_OBJECT
 public:
     VideoPlayer(Katalog::BaseNode* sel_file, QWidget *parent = nullptr);
+    VideoPlayer(const FileList *fileVector, QWidget *parent = nullptr);
     virtual ~VideoPlayer() = default;
 
     void setUrl(const QUrl &url);
@@ -51,16 +52,25 @@ private slots:
     void durationChanged(qint64 duration);
     void setPosition(int position);
     void handleError();
+    void resizeEvent(QResizeEvent *event) override;
+    void MoveBack();
+    void MoveForward();
 
 private:
     QMediaPlayer* m_mediaPlayer;
     QAbstractButton *m_playButton;
+    QAbstractButton *previousButton;
+    QAbstractButton *nextButton;
     QSlider *m_positionSlider;
     QLabel *m_errorLabel;
     QAbstractButton *m_volumeIcon;
     QSlider* sliderVolume;
     QHBoxLayout* playLayout;
     QHBoxLayout* controlsLayout;
+    QLabel* photodisplay;
+    QImage* img;
+    const FileList *files;
+    FileList::const_iterator  i = files->begin();
 };
 
 #endif // VIDEOPLAYER_H

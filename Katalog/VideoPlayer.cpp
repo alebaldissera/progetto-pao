@@ -2,8 +2,18 @@
 
 VideoPlayer::VideoPlayer(Katalog::BaseNode* sel_file, QWidget *parent) : QWidget(parent)
 {
+    setMinimumSize(1024,768);
+
     playLayout = new QHBoxLayout(this);
     controlsLayout = new QHBoxLayout(this);
+
+    previousButton = new QPushButton(this);
+    previousButton->setEnabled(false);
+    previousButton->setIcon(style()->standardIcon(QStyle::SP_ArrowLeft));
+    nextButton = new QPushButton(this);
+    nextButton->setEnabled(false);
+    nextButton->setIcon(style()->standardIcon(QStyle::SP_ArrowRight));
+
 
     if (sel_file == dynamic_cast<Katalog::Video*>(sel_file) || sel_file == dynamic_cast<Katalog::Audio*>(sel_file))
     {
@@ -26,7 +36,7 @@ VideoPlayer::VideoPlayer(Katalog::BaseNode* sel_file, QWidget *parent) : QWidget
         connect(m_positionSlider, &QAbstractSlider::sliderMoved,
                 this, &VideoPlayer::setPosition);
 
-        sliderVolume = new QSlider(Qt::Horizontal, this); // Put slider where you want.
+        sliderVolume = new QSlider(Qt::Horizontal, this);
         sliderVolume->setRange(0, 100);
         sliderVolume->setValue(m_mediaPlayer->volume());
 
@@ -37,6 +47,8 @@ VideoPlayer::VideoPlayer(Katalog::BaseNode* sel_file, QWidget *parent) : QWidget
 
         controlsLayout->setContentsMargins(0, 0, 0, 0);
         controlsLayout->addWidget(m_playButton);
+        controlsLayout->addWidget(previousButton);
+        controlsLayout->addWidget(nextButton);
         controlsLayout->addWidget(m_positionSlider);
         controlsLayout->addWidget(m_volumeIcon);
         controlsLayout->addWidget(sliderVolume);
@@ -48,22 +60,31 @@ VideoPlayer::VideoPlayer(Katalog::BaseNode* sel_file, QWidget *parent) : QWidget
         setLayout(playLayout);
 
         m_mediaPlayer->setVideoOutput(videoWidget);
-        connect(m_mediaPlayer, &QMediaPlayer::stateChanged,
-                this, &VideoPlayer::mediaStateChanged);
+        connect(m_mediaPlayer, &QMediaPlayer::stateChanged, this, &VideoPlayer::mediaStateChanged);
         connect(m_mediaPlayer, &QMediaPlayer::positionChanged, this, &VideoPlayer::positionChanged);
         connect(m_mediaPlayer, &QMediaPlayer::durationChanged, this, &VideoPlayer::durationChanged);
-        connect(m_mediaPlayer, QOverload<QMediaPlayer::Error>::of(&QMediaPlayer::error),
-                this, &VideoPlayer::handleError);
+        connect(m_mediaPlayer, QOverload<QMediaPlayer::Error>::of(&QMediaPlayer::error), this, &VideoPlayer::handleError);
     }
     else if (sel_file == dynamic_cast<Katalog::Photo*>(sel_file))
     {
-        QLabel *photodisplay = new QLabel(this);
-        QImage img(QString::fromStdString(sel_file->getName()));
-        photodisplay->setPixmap(QPixmap::fromImage(img.scaled(1024, 768, Qt::KeepAspectRatio, Qt::SmoothTransformation)));
+        photodisplay = new QLabel(this);
+        QImage img(QString::fromStdString(sel_file->getPath()));
+
+        photodisplay->setPixmap(QPixmap::fromImage(img.scaled(1024, 768, Qt::KeepAspectRatio)));
         playLayout->addWidget(photodisplay);
     }
+
     setLayout(playLayout);
     setAttribute(Qt::WA_DeleteOnClose, true);
+}
+
+VideoPlayer::VideoPlayer(const FileList *fileVector, QWidget *parent) : QWidget(parent), files(fileVector)
+{
+    previousButton->setEnabled(true);
+    nextButton->setEnabled(true);
+
+    connect(previousButton, SIGNAL(QAbstractButton::clicked()), this, SLOT(MoveBack()));
+    connect(nextButton, SIGNAL(QAbstractButton::clicked()), this, SLOT(MoveForward()));
 }
 
 void VideoPlayer::setUrl(const QUrl &url)
@@ -124,4 +145,29 @@ void VideoPlayer::handleError()
         message += errorString;
     m_errorLabel->setText(message);
 }
+
+void VideoPlayer::resizeEvent(QResizeEvent *event)
+{
+    photodisplay->setPixmap(QPixmap::fromImage(img->scaled(width(), height(), Qt::KeepAspectRatio)));
+    QWidget::resizeEvent(event);
+}
+
+void VideoPlayer::MoveForward()
+{
+    if(i == files->end())
+        i = files->begin();
+    else
+        i++;
+
+}
+
+void VideoPlayer::MoveBack()
+{
+    if(i == files->begin())
+        i = files->end();
+    else
+        i--;
+}
+
+
 
