@@ -36,6 +36,7 @@ public slots:
     void pasteFile(std::string);
     void removeFile(std::string);
     void renameFile(std::string, std::string);
+    void pathTextChanged();
 
 private:
     Katalog::Catalogo &catalogo;

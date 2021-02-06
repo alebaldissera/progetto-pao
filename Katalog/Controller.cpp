@@ -111,6 +111,19 @@ void Controller::renameFile(std::string file, std::string newName)
     emit catalogUpdated();
 }
 
+void Controller::pathTextChanged()
+{
+    std::string path = mainwindow.getTextPath();
+    try {
+        mainwindow.showGrid(&catalogo.getFile(path)->getFiles());
+        mainwindow.selectFileOnTree(path);
+    }  catch (std::runtime_error &e) { //il file non esiste resetto la path
+        mainwindow.resetTextPath();
+        QMessageBox::critical(nullptr, "File non valido", "Path inserita non valida");
+    }
+
+}
+
 std::string Controller::getItemPath(QTreeWidgetItem *item)
 {
     string path = "/" + item->text(0).toStdString();

@@ -36,11 +36,17 @@ public:
     void clearTree();
     void showGrid(const FileList* files);
     void showPlayWindow(const FileList& files);
+    std::string getTextPath();
+    void selectFileOnTree(std::string);
+
+public slots:
+    void resetTextPath();
 
 private:
     DeselectableTreeView *catalogView;
     QWidget *screen;
     QHBoxLayout *screenLayout;
+    QLineEdit *pathEditor;
 
     //menu actions
     QAction *SaveAction;
@@ -61,6 +67,7 @@ signals:
     void filePasted(std::string);
     void fileRemoved(std::string);
     void fileRenamed(std::string, std::string);
+    void pathTextChanged();
 
 private slots:
     /*
@@ -74,6 +81,7 @@ private slots:
     void addVideo();
     void addDirectory();
     void doubleClickOnGridItem(Katalog::BaseNode*);
+    void updatePathString();
     //void doubleClickToPlayItem(Katalog::BaseNode*);
     void copy();
     void cut();

@@ -11,13 +11,15 @@ using std::endl;
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent), controller(nullptr)
 {
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
-    mainLayout->setSpacing(0);
-    mainLayout->setMargin(0);
+    mainLayout->setSpacing(5);
+    mainLayout->setMargin(5);
     addMenus(mainLayout);
+
+    pathEditor = new QLineEdit("/", this);
+    mainLayout->addWidget(pathEditor);
 
     screenLayout = new QHBoxLayout(this);
     mainLayout->addLayout(screenLayout);
-
 
     //tree view per rappresentare la struttura ad albero del catalogo
     catalogView = new DeselectableTreeView(this);
@@ -26,6 +28,7 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent), controller(nullptr)
     catalogView->setSizePolicy(catalogPolicy);
     catalogView->setHeaderHidden(true);
     catalogView->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
+    connect(catalogView, SIGNAL(itemSelectionChanged()), this, SLOT(updatePathString()));
 
     screenLayout->addWidget(catalogView);
 
@@ -57,6 +60,7 @@ void MainWindow::setController(Controller *c)
     connect(this, SIGNAL(filePasted(std::string)), controller, SLOT(pasteFile(std::string)));
     connect(this, SIGNAL(fileRemoved(std::string)), controller, SLOT(removeFile(std::string)));
     connect(this, SIGNAL(fileRenamed(std::string,std::string)), controller, SLOT(renameFile(std::string,std::string)));
+    connect(pathEditor, SIGNAL(returnPressed()), controller, SLOT(pathTextChanged()));
 }
 
 void MainWindow::updateTree(const Katalog::BaseNode *root)
@@ -105,6 +109,28 @@ void MainWindow::showPlayWindow(const FileList &files)
      screen->setSizePolicy(widgetPolicy);
      screenLayout->addWidget(screen);
      //connect(screen, SIGNAL(doubleClickedItem(Katalog::BaseNode*)), this, SLOT());
+}
+
+void MainWindow::selectFileOnTree(std::string path)
+{
+    std::string filename = getFileName(path);
+    auto nodes = catalogView->findItems(QString::fromStdString(filename), Qt::MatchFixedString | Qt::MatchCaseSensitive, 0);
+    for(auto i = nodes.begin(); i != nodes.end(); ++i){
+        if(getItemPath(*i) == path){
+            catalogView->clearSelection();
+            catalogView->setItemSelected(*i, true);
+        }
+    }
+}
+
+void MainWindow::resetTextPath()
+{
+    pathEditor->setText(QString::fromStdString(getSelectedFilePath()));
+}
+
+std::string MainWindow::getTextPath()
+{
+    return pathEditor->text().toStdString();
 }
 
 void MainWindow::addMenus(QLayout *layout)
@@ -329,7 +355,6 @@ void MainWindow::doubleClickOnGridItem(Katalog::BaseNode *file)
             else goToParent = false;
         }
     } else { //sto vedendo la root
-        cout << "mi devo muovere nella radice" << endl;
         QList<QTreeWidgetItem*> items = catalogView->findItems(QString::fromStdString(file->getName()), Qt::MatchFlag::MatchFixedString | Qt::MatchFlag::MatchCaseSensitive, 0);
         for(auto i = items.begin(); i != items.end(); i++){
             if(!(*i)->parent())   //non devo fare il controllo sul testo in quanto già fatto dalla findItems
@@ -343,6 +368,11 @@ void MainWindow::doubleClickOnGridItem(Katalog::BaseNode *file)
 
     if(file->getFilesCount() > 0)
         showGrid(&file->getFiles());
+}
+
+void MainWindow::updatePathString()
+{
+    pathEditor->setText(QString::fromStdString(getSelectedFilePath()));
 }
 
 void MainWindow::copy()
