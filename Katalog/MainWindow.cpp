@@ -104,7 +104,7 @@ void MainWindow::showGrid(const FileList *files)
     static_cast<GridView*>(screen)->redrawGrid();
 }
 
-void MainWindow::showPlayWindow(const FileList &files)
+/*void MainWindow::showPlayWindow(const FileList &files)
 {
      screen->close();
      screenLayout->removeWidget(screen);
@@ -114,7 +114,7 @@ void MainWindow::showPlayWindow(const FileList &files)
      screen->setSizePolicy(widgetPolicy);
      screenLayout->addWidget(screen);
      //connect(screen, SIGNAL(doubleClickedItem(Katalog::BaseNode*)), this, SLOT());
-}
+}*/
 
 void MainWindow::selectFileOnTree(std::string path)
 {
@@ -123,7 +123,7 @@ void MainWindow::selectFileOnTree(std::string path)
     for(auto i = nodes.begin(); i != nodes.end(); ++i){
         if(getItemPath(*i) == path){
             catalogView->clearSelection();
-            catalogView->setItemSelected(*i, true);
+            (*i)->setSelected(true);
         }
     }
 }
@@ -344,15 +344,15 @@ void MainWindow::addDirectory()
 void MainWindow::doubleClickOnGridItem(Katalog::BaseNode *file)
 {
     //update del file selezionato nel treewidget
-    if(!catalogView->selectedItems().empty()) {
+    if(!catalogView->selectedItems().empty() && catalogView->selectedItems()[0]->parent()) {
         QTreeWidgetItem *item = catalogView->selectedItems().at(0); //sufficiente perchè si può selezionare un file solo
         bool goToParent = true;
         while(goToParent){
-
             for(int i = 0; i < item->childCount(); i++){
                 if(item->child(i)->text(0).toStdString() == file->getName()){
                     catalogView->clearSelection();
-                    catalogView->setItemSelected(item->child(i), true);
+                    //catalogView->setItemSelected(item->child(i), true);
+                    item->child(i)->setSelected(true);
                     goToParent = false;
                 }
             }
@@ -365,7 +365,8 @@ void MainWindow::doubleClickOnGridItem(Katalog::BaseNode *file)
             if(!(*i)->parent())   //non devo fare il controllo sul testo in quanto già fatto dalla findItems
             {
                 catalogView->clearSelection();
-                catalogView->setItemSelected(*i, true);
+                //catalogView->setItemSelected(*i, true);
+                (*i)->setSelected(true);
                 break;
             }
         }
