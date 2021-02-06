@@ -84,7 +84,8 @@ void Controller::pasteFile(std::string dest)
         }
         else
         {
-            catalogo.move(clip, dest);
+            if(clip != dest)
+                catalogo.move(clip, dest);
         }
         clip = "";
         mainwindow.updateTree(catalogo.getRoot().pointer());

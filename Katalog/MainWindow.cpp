@@ -264,31 +264,40 @@ std::string MainWindow::getItemPath(QTreeWidgetItem *item)
 
 void MainWindow::addPhoto()
 {
-    std::string source = QFileDialog::getOpenFileName(this, tr("Apri foto"), "/home", tr("Immagini (*.png *.jpg)")).toStdString();
-    if(source != "") {
-        std::string filename = getFileName(source);
-        std::string destination = getSelectedFilePath();
-        emit addFile(new Katalog::Photo(filename, source), destination);
+    QStringList sources = QFileDialog::getOpenFileNames(this, tr("Apri foto"), "/home", tr("Immagini (*.png *.jpg)"));
+    if(!sources.empty()) {
+        for(auto i = sources.begin(); i != sources.end(); ++i){
+            std::string source = i->toStdString();
+            std::string filename = getFileName(source);
+            std::string destination = getSelectedFilePath();
+            emit addFile(new Katalog::Photo(filename, source), destination);
+        }
     }
 }
 
 void MainWindow::addAudio()
 {
-    std::string source = QFileDialog::getOpenFileName(this, tr("Apri foto"), "/home", tr("Audio (*.mp3 *.flac)")).toStdString();
-    if(source != "") {
-        std::string filename = getFileName(source);
-        std::string destination = getSelectedFilePath();
-        emit addFile(new Katalog::Audio(filename, source), destination);
+    QStringList sources = QFileDialog::getOpenFileNames(this, tr("Apri foto"), "/home", tr("Audio (*.mp3 *.flac)"));
+    if(!sources.empty()) {
+        for(auto i = sources.begin(); i != sources.end(); ++i){
+            std::string source = i->toStdString();
+            std::string filename = getFileName(source);
+            std::string destination = getSelectedFilePath();
+            emit addFile(new Katalog::Audio(filename, source), destination);
+        }
     }
 }
 
 void MainWindow::addVideo()
 {
-    std::string source = QFileDialog::getOpenFileName(this, tr("Apri foto"), "/home", tr("Immagini (*.mp4 *.avi)")).toStdString();
-    if(source != "") {
-        std::string filename = getFileName(source);
-        std::string destination = getSelectedFilePath();
-        emit addFile(new Katalog::Video(filename, source), destination);
+    QStringList sources = QFileDialog::getOpenFileNames(this, tr("Apri foto"), "/home", tr("Immagini (*.mp4 *.avi)"));
+    if(!sources.empty()) {
+        for(auto i = sources.begin(); i != sources.end(); ++i){
+            std::string source = i->toStdString();
+            std::string filename = getFileName(source);
+            std::string destination = getSelectedFilePath();
+            emit addFile(new Katalog::Video(filename, source), destination);
+        }
     }
 }
 
@@ -303,6 +312,35 @@ void MainWindow::addDirectory()
 
 void MainWindow::doubleClickOnGridItem(Katalog::BaseNode *file)
 {
+    //update del file selezionato nel treewidget
+    if(!catalogView->selectedItems().empty()) {
+        QTreeWidgetItem *item = catalogView->selectedItems().at(0); //sufficiente perchè si può selezionare un file solo
+        bool goToParent = true;
+        while(goToParent){
+
+            for(int i = 0; i < item->childCount(); i++){
+                if(item->child(i)->text(0).toStdString() == file->getName()){
+                    catalogView->clearSelection();
+                    catalogView->setItemSelected(item->child(i), true);
+                    goToParent = false;
+                }
+            }
+            if(goToParent) item = item->parent();
+            else goToParent = false;
+        }
+    } else { //sto vedendo la root
+        cout << "mi devo muovere nella radice" << endl;
+        QList<QTreeWidgetItem*> items = catalogView->findItems(QString::fromStdString(file->getName()), Qt::MatchFlag::MatchFixedString | Qt::MatchFlag::MatchCaseSensitive, 0);
+        for(auto i = items.begin(); i != items.end(); i++){
+            if(!(*i)->parent())   //non devo fare il controllo sul testo in quanto già fatto dalla findItems
+            {
+                catalogView->clearSelection();
+                catalogView->setItemSelected(*i, true);
+                break;
+            }
+        }
+    }
+
     if(file->getFilesCount() > 0)
         showGrid(&file->getFiles());
 }

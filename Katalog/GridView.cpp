@@ -17,10 +17,12 @@ GridView::GridView(const FileList *fileVector, QWidget *parent) : QWidget(parent
 
 void GridView::redrawGrid()
 {
-    delete grid;
-    grid = new FlowLayout(this, 20, 10, 10);
-
-    setLayout(grid);
+    QLayoutItem *item;
+    while ((item = grid->takeAt(0)))
+    {
+        delete item->widget();
+        delete item;
+    }
     for(auto i = files->begin(); i != files->end(); i++)
     {
         PreviewWindow* icon = new PreviewWindow((*files)[i].pointer(), this);
