@@ -45,7 +45,7 @@ public slots:
 private:
     DeselectableTreeView *catalogView;
     QWidget *screen;
-    QHBoxLayout *screenLayout;
+    QVBoxLayout *screenLayout;
     QLineEdit *pathEditor;
 
     //menu actions

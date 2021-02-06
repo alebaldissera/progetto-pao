@@ -10,16 +10,10 @@ using std::endl;
 
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent), controller(nullptr)
 {
-    QVBoxLayout *mainLayout = new QVBoxLayout(this);
+    QHBoxLayout *mainLayout = new QHBoxLayout(this);
     mainLayout->setSpacing(5);
     mainLayout->setMargin(5);
     addMenus(mainLayout);
-
-    pathEditor = new QLineEdit("/", this);
-    mainLayout->addWidget(pathEditor);
-
-    screenLayout = new QHBoxLayout(this);
-    mainLayout->addLayout(screenLayout);
 
     //tree view per rappresentare la struttura ad albero del catalogo
     catalogView = new DeselectableTreeView(this);
@@ -29,15 +23,26 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent), controller(nullptr)
     catalogView->setHeaderHidden(true);
     catalogView->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
     connect(catalogView, SIGNAL(itemSelectionChanged()), this, SLOT(updatePathString()));
+    mainLayout->addWidget(catalogView);
 
-    screenLayout->addWidget(catalogView);
-
-    //widget fittizio solo per vedere le proporzioni
-    //da sostituire con un widget adatto
-    screen = new QWidget(this);
+    QWidget *aux = new QWidget(this); //lo uso solo per determinare le proporzioni tra treewidget e seconda parte dello schermo
     QSizePolicy widgetPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     widgetPolicy.setHorizontalStretch(3);
-    screen->setSizePolicy(widgetPolicy);
+    aux->setSizePolicy(widgetPolicy);
+    mainLayout->addWidget(aux);
+
+    //creo il layout che conterrà la barra con la paht e la griglia con i file
+    screenLayout = new QVBoxLayout(this);
+    aux->setLayout(screenLayout);
+    screenLayout->setMargin(0);
+
+    //widget fittizio usato solo dal costruttore, viene sostituito a comando dal controller
+    screen = new QWidget(this);
+    pathEditor = new QLineEdit("/", this);
+
+    /*screen->setSizePolicy(widgetPolicy);
+    pathEditor->setSizePolicy(widgetPolicy);*/
+    screenLayout->addWidget(pathEditor);
     screenLayout->addWidget(screen);
 
     setLayout(mainLayout);
