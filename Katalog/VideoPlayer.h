@@ -37,13 +37,12 @@ class VideoPlayer : public QWidget
 {
     Q_OBJECT
 public:
-    VideoPlayer(const FileList &fileVector, QWidget *parent = nullptr);
+    VideoPlayer(Katalog::BaseNode* sel_file, QWidget *parent = nullptr);
     virtual ~VideoPlayer() = default;
 
     void setUrl(const QUrl &url);
 
 public slots:
-    void openFile();
     void play();
 
 private slots:
@@ -62,7 +61,6 @@ private:
     QSlider* sliderVolume;
     QHBoxLayout* playLayout;
     QHBoxLayout* controlsLayout;
-    const FileList &files;
 };
 
 #endif // VIDEOPLAYER_H
