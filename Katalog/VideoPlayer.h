@@ -23,6 +23,7 @@
 #include "Audio.h"
 #include "FlowLayout.h"
 #include "PreviewWindow.h"
+#include <QStackedLayout>
 
 QT_BEGIN_NAMESPACE
 class QAbstractButton;
@@ -57,9 +58,11 @@ private slots:
 private:
     QVBoxLayout* playLayout;
     QHBoxLayout* controlsLayout;
+    QStackedLayout *view;
 
     QMediaPlayer* mediaPlayer;
-    QMediaPlaylist *playlist;
+    QVideoWidget *videoWidget;
+    QLabel *imageView;
 
     QPushButton *playButton;
     QPushButton *previousButton;
@@ -70,14 +73,18 @@ private:
     QSlider* sliderVolume;
     QLabel *errorLabel;
 
+    QImage img;
+
     const FileList* files;
     unsigned int mediaIndex;
 
     void buildWidget();
     void addControls(QLayout *l);
+    void setMedia(const Katalog::BaseNode*);
 
 protected:
     void closeEvent(QCloseEvent *event);
+    void resizeEvent(QResizeEvent *event);
 };
 
 #endif // VIDEOPLAYER_H
