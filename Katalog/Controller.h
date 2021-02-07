@@ -30,6 +30,7 @@ public slots:
     void openDirectory(QTreeWidgetItem *node);
     void closeDirectory(QTreeWidgetItem *node);
     void treeItemClicked(QTreeWidgetItem*,int);
+    void treeItemDoubleClicked(QTreeWidgetItem*, int);
     void viewGridOnRoot();
     void copyFile(std::string);
     void cutFile(std::string);
@@ -37,6 +38,8 @@ public slots:
     void removeFile(std::string);
     void renameFile(std::string, std::string);
     void pathTextChanged();
+    void requestForGridView();
+    void requestForPlayView();
 
 private:
     Katalog::Catalogo &catalogo;

@@ -5,5 +5,9 @@
         <file>image-gallery.svg</file>
         <file>speaker.svg</file>
         <file>video.svg</file>
+        <file>arrow-right.svg</file>
+        <file>arrow-left.svg</file>
+        <file>muted.svg</file>
+        <file>volume.svg</file>
     </qresource>
 </RCC>

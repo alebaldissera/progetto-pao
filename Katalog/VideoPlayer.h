@@ -37,40 +37,47 @@ class VideoPlayer : public QWidget
 {
     Q_OBJECT
 public:
-    VideoPlayer(Katalog::BaseNode* sel_file, QWidget *parent = nullptr);
+    VideoPlayer(const Katalog::BaseNode* sel_file, QWidget *parent = nullptr);
     VideoPlayer(const FileList *fileVector, QWidget *parent = nullptr);
     virtual ~VideoPlayer() = default;
 
-    void setUrl(const QUrl &url);
-
-public slots:
-    void play();
-
 private slots:
-    void mediaStateChanged(QMediaPlayer::State state);
+    void playPause();
+    void mediaStatusChanged(QMediaPlayer::MediaStatus state);
     void positionChanged(qint64 position);
     void durationChanged(qint64 duration);
     void setPosition(int position);
     void handleError();
-    void resizeEvent(QResizeEvent *event) override;
-    void MoveBack();
-    void MoveForward();
+    void playerStateChanged(QMediaPlayer::State state);
+    void triggerMuting();
+    void muteHandler(bool isMute);
+    void nextMedia();
+    void previousMedia();
 
 private:
-    QMediaPlayer* m_mediaPlayer;
-    QAbstractButton *m_playButton;
-    QAbstractButton *previousButton;
-    QAbstractButton *nextButton;
-    QSlider *m_positionSlider;
-    QLabel *m_errorLabel;
-    QAbstractButton *m_volumeIcon;
-    QSlider* sliderVolume;
-    QHBoxLayout* playLayout;
+    QVBoxLayout* playLayout;
     QHBoxLayout* controlsLayout;
-    QLabel* photodisplay;
-    QImage* img;
-    const FileList *files;
-    FileList::const_iterator  i = files->begin();
+
+    QMediaPlayer* mediaPlayer;
+    QMediaPlaylist *playlist;
+
+    QPushButton *playButton;
+    QPushButton *previousButton;
+    QPushButton *nextButton;
+    QPushButton *volumeIcon;
+
+    QSlider *positionSlider;
+    QSlider* sliderVolume;
+    QLabel *errorLabel;
+
+    const FileList* files;
+    unsigned int mediaIndex;
+
+    void buildWidget();
+    void addControls(QLayout *l);
+
+protected:
+    void closeEvent(QCloseEvent *event);
 };
 
 #endif // VIDEOPLAYER_H

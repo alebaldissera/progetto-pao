@@ -1,173 +1,199 @@
 #include "VideoPlayer.h"
 
-VideoPlayer::VideoPlayer(Katalog::BaseNode* sel_file, QWidget *parent) : QWidget(parent)
+VideoPlayer::VideoPlayer(const Katalog::BaseNode* sel_file, QWidget *parent) : QWidget(parent), files(nullptr), mediaIndex(0)
 {
-    setMinimumSize(1024,768);
-
-    playLayout = new QHBoxLayout(this);
-    controlsLayout = new QHBoxLayout(this);
-
-    previousButton = new QPushButton(this);
-    previousButton->setEnabled(false);
-    previousButton->setIcon(style()->standardIcon(QStyle::SP_ArrowLeft));
-    nextButton = new QPushButton(this);
-    nextButton->setEnabled(false);
-    nextButton->setIcon(style()->standardIcon(QStyle::SP_ArrowRight));
-
-
-    if (sel_file == dynamic_cast<Katalog::Video*>(sel_file) || sel_file == dynamic_cast<Katalog::Audio*>(sel_file))
-    {
-        m_mediaPlayer = new QMediaPlayer(this, QMediaPlayer::VideoSurface);
-        QVideoWidget *videoWidget = new QVideoWidget;
-
-        m_playButton = new QPushButton;
-        m_playButton->setEnabled(false);
-        m_playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
-
-        connect(m_playButton, &QAbstractButton::clicked,
-                this, &VideoPlayer::play);
-
-        m_volumeIcon = new QPushButton;
-        m_volumeIcon->setIcon(style()->standardIcon(QStyle::SP_MediaVolume));
-
-        m_positionSlider = new QSlider(Qt::Horizontal);
-        m_positionSlider->setRange(0, 0);
-
-        connect(m_positionSlider, &QAbstractSlider::sliderMoved,
-                this, &VideoPlayer::setPosition);
-
-        sliderVolume = new QSlider(Qt::Horizontal, this);
-        sliderVolume->setRange(0, 100);
-        sliderVolume->setValue(m_mediaPlayer->volume());
-
-        connect(sliderVolume, &QSlider::valueChanged, m_mediaPlayer, &QMediaPlayer::setVolume);
-
-        m_errorLabel = new QLabel;
-        m_errorLabel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
-
-        controlsLayout->setContentsMargins(0, 0, 0, 0);
-        controlsLayout->addWidget(m_playButton);
-        controlsLayout->addWidget(previousButton);
-        controlsLayout->addWidget(nextButton);
-        controlsLayout->addWidget(m_positionSlider);
-        controlsLayout->addWidget(m_volumeIcon);
-        controlsLayout->addWidget(sliderVolume);
-
-        playLayout->addWidget(videoWidget);
-        playLayout->addLayout(controlsLayout);
-        playLayout->addWidget(m_errorLabel);
-
-        setLayout(playLayout);
-
-        m_mediaPlayer->setVideoOutput(videoWidget);
-        connect(m_mediaPlayer, &QMediaPlayer::stateChanged, this, &VideoPlayer::mediaStateChanged);
-        connect(m_mediaPlayer, &QMediaPlayer::positionChanged, this, &VideoPlayer::positionChanged);
-        connect(m_mediaPlayer, &QMediaPlayer::durationChanged, this, &VideoPlayer::durationChanged);
-        connect(m_mediaPlayer, QOverload<QMediaPlayer::Error>::of(&QMediaPlayer::error), this, &VideoPlayer::handleError);
+    buildWidget();
+    if(dynamic_cast<const Katalog::Photo*>(sel_file) || dynamic_cast<const Katalog::Audio*>(sel_file) || dynamic_cast<const Katalog::Video*>(sel_file)) {
+        errorLabel->setText(QString::fromStdString(sel_file->getName()));
+        mediaPlayer->setMedia(QUrl::fromLocalFile(QString::fromStdString(sel_file->getPath())));
+    } else {
+        errorLabel->setText("Non ci sono file riproducibili");
     }
-    else if (sel_file == dynamic_cast<Katalog::Photo*>(sel_file))
-    {
-        photodisplay = new QLabel(this);
-        QImage img(QString::fromStdString(sel_file->getPath()));
+    previousButton->setDisabled(true);
+    nextButton->setDisabled(true);
+    setAttribute(Qt::WA_DeleteOnClose, true); //permette di deallocare il widget quando viene chiuso
+}
 
-        photodisplay->setPixmap(QPixmap::fromImage(img.scaled(1024, 768, Qt::KeepAspectRatio)));
-        playLayout->addWidget(photodisplay);
+VideoPlayer::VideoPlayer(const FileList *fileVector, QWidget *parent) : QWidget(parent), files(fileVector), mediaIndex(0)
+{
+    buildWidget();
+    bool soloCartelle = true;
+    for(unsigned int i = 0; i < files->size() && soloCartelle; ++i){
+        if(dynamic_cast<Katalog::Photo*>((*files)[i].pointer()) || dynamic_cast<Katalog::Audio*>((*files)[i].pointer()) || dynamic_cast<Katalog::Video*>((*files)[i].pointer())){
+            mediaIndex = i;
+            soloCartelle = false;
+        }
     }
 
-    setLayout(playLayout);
-    setAttribute(Qt::WA_DeleteOnClose, true);
-}
-
-VideoPlayer::VideoPlayer(const FileList *fileVector, QWidget *parent) : QWidget(parent), files(fileVector)
-{
-    previousButton->setEnabled(true);
-    nextButton->setEnabled(true);
-
-    connect(previousButton, SIGNAL(QAbstractButton::clicked()), this, SLOT(MoveBack()));
-    connect(nextButton, SIGNAL(QAbstractButton::clicked()), this, SLOT(MoveForward()));
-}
-
-void VideoPlayer::setUrl(const QUrl &url)
-{
-    m_errorLabel->setText(QString());
-    setWindowFilePath(url.isLocalFile() ? url.toLocalFile() : QString());
-    m_mediaPlayer->setMedia(url);
-    m_playButton->setEnabled(true);
-}
-
-void VideoPlayer::play()
-{
-    switch (m_mediaPlayer->state()) {
-    case QMediaPlayer::PlayingState:
-        m_mediaPlayer->pause();
-        break;
-    default:
-        m_mediaPlayer->play();
-        break;
+    if(soloCartelle){
+        errorLabel->setText("Non ci sono file riproducibili");
+        playButton->setDisabled(true);
+        nextButton->setDisabled(true);
+        previousButton->setDisabled(true);
+    } else {
+        mediaPlayer->setMedia(QUrl::fromLocalFile(QString::fromStdString((*fileVector)[mediaIndex]->getPath())));
     }
 }
 
-void VideoPlayer::mediaStateChanged(QMediaPlayer::State state)
+void VideoPlayer::playPause()
 {
-    switch(state) {
-    case QMediaPlayer::PlayingState:
-        m_playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
-        break;
-    default:
-        m_playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
-        break;
+    if(mediaPlayer->state() == QMediaPlayer::PlayingState){
+        mediaPlayer->pause();
+    } else {
+        mediaPlayer->play();
+    }
+}
+
+void VideoPlayer::mediaStatusChanged(QMediaPlayer::MediaStatus state)
+{
+    if(state == QMediaPlayer::LoadedMedia){
+        playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+        if(files != nullptr)
+            errorLabel->setText(QString::fromStdString((*files)[mediaIndex]->getName()));
+        mediaPlayer->play();
+    } else if(state == QMediaPlayer::EndOfMedia){
+        if(files != nullptr && dynamic_cast<Katalog::Photo*>((*files)[mediaIndex].pointer()) == nullptr){
+            nextMedia();
+        }
     }
 }
 
 void VideoPlayer::positionChanged(qint64 position)
 {
-    m_positionSlider->setValue(position);
+    positionSlider->setValue(position);
 }
 
 void VideoPlayer::durationChanged(qint64 duration)
 {
-    m_positionSlider->setRange(0, duration);
+    positionSlider->setRange(0, duration);
 }
 
 void VideoPlayer::setPosition(int position)
 {
-    m_mediaPlayer->setPosition(position);
+    mediaPlayer->setPosition(position);
 }
 
 void VideoPlayer::handleError()
 {
-    m_playButton->setEnabled(false);
-    const QString errorString = m_mediaPlayer->errorString();
+    playButton->setEnabled(false);
+    const QString errorString = mediaPlayer->errorString();
     QString message = "Error: ";
     if (errorString.isEmpty())
-        message += " #" + QString::number(int(m_mediaPlayer->error()));
+        message += " #" + QString::number(int(mediaPlayer->error()));
     else
         message += errorString;
-    m_errorLabel->setText(message);
+    errorLabel->setText(message);
 }
 
-void VideoPlayer::resizeEvent(QResizeEvent *event)
+void VideoPlayer::playerStateChanged(QMediaPlayer::State state)
 {
-    photodisplay->setPixmap(QPixmap::fromImage(img->scaled(width(), height(), Qt::KeepAspectRatio)));
-    QWidget::resizeEvent(event);
+    if(state == QMediaPlayer::PlayingState)
+        playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPause));
+    else if(state == QMediaPlayer::PausedState)
+        playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
 }
 
-void VideoPlayer::MoveForward()
+void VideoPlayer::triggerMuting()
 {
-    if(i == files->end())
-        i = files->begin();
+    mediaPlayer->setMuted(!mediaPlayer->isMuted());
+}
+
+void VideoPlayer::muteHandler(bool isMute)
+{
+    if(isMute)
+        volumeIcon->setIcon(QIcon(":/Icons/muted.svg"));
     else
-        i++;
-
+        volumeIcon->setIcon(QIcon(":/Icons/volume.svg"));
 }
 
-void VideoPlayer::MoveBack()
+void VideoPlayer::nextMedia()
 {
-    if(i == files->begin())
-        i = files->end();
-    else
-        i--;
+    if((++mediaIndex) == files->size()) mediaIndex = 0; //avanzo di un media file
+    while(!dynamic_cast<Katalog::Photo*>((*files)[mediaIndex].pointer()) && !dynamic_cast<Katalog::Audio*>((*files)[mediaIndex].pointer()) && !dynamic_cast<Katalog::Video*>((*files)[mediaIndex].pointer()))
+    {   //avanzo finchè non trovo un file adatto
+        if((++mediaIndex) == files->size()) mediaIndex = 0;
+    }
+    mediaPlayer->setMedia(QUrl::fromLocalFile(QString::fromStdString((*files)[mediaIndex]->getPath())));
 }
 
+void VideoPlayer::previousMedia()
+{
+    if(mediaIndex == 0) mediaIndex = files->size() - 1; //torno indietro di un file
+    else --mediaIndex;
+    while(!dynamic_cast<Katalog::Photo*>((*files)[mediaIndex].pointer()) && !dynamic_cast<Katalog::Audio*>((*files)[mediaIndex].pointer()) && !dynamic_cast<Katalog::Video*>((*files)[mediaIndex].pointer()))
+    {   //torno indietro di un file finchè non ne trovo uno di riproducibile
+        if(mediaIndex == 0) mediaIndex = files->size() - 1; //torno indietro di un file
+        else --mediaIndex;
+    }
+    mediaPlayer->setMedia(QUrl::fromLocalFile(QString::fromStdString((*files)[mediaIndex]->getPath())));
+}
 
+void VideoPlayer::buildWidget()
+{
+    playLayout = new QVBoxLayout(this);
+    playLayout->setMargin(0);
+    controlsLayout = new QHBoxLayout(this);
+    controlsLayout->setMargin(0);
+    addControls(controlsLayout);
+
+    errorLabel = new QLabel(this);
+    errorLabel->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Maximum);
+
+    mediaPlayer = new QMediaPlayer(this, QMediaPlayer::VideoSurface);
+    QVideoWidget *videoWidget = new QVideoWidget;
+    mediaPlayer->setVideoOutput(videoWidget);
+    sliderVolume->setValue(mediaPlayer->volume());
+
+    playLayout->addWidget(videoWidget);
+    playLayout->addLayout(controlsLayout);
+    playLayout->addWidget(errorLabel);
+
+    connect(playButton, SIGNAL(clicked()), this, SLOT(playPause()));
+    connect(previousButton, SIGNAL(clicked()), this, SLOT(previousMedia()));
+    connect(nextButton, SIGNAL(clicked()), this, SLOT(nextMedia()));
+    connect(volumeIcon, SIGNAL(clicked()), this, SLOT(triggerMuting()));
+    connect(sliderVolume, SIGNAL(valueChanged(int)), mediaPlayer, SLOT(setVolume(int)));
+    connect(positionSlider, SIGNAL(sliderMoved(int)), this, SLOT(setPosition(int)));
+    connect(mediaPlayer, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(playerStateChanged(QMediaPlayer::State)));
+    connect(mediaPlayer, SIGNAL(mediaStatusChanged(QMediaPlayer::MediaStatus)), this, SLOT(mediaStatusChanged(QMediaPlayer::MediaStatus)));
+    connect(mediaPlayer, SIGNAL(positionChanged(qint64)), this, SLOT(positionChanged(qint64)));
+    connect(mediaPlayer, SIGNAL(durationChanged(qint64)), this, SLOT(durationChanged(qint64)));
+    connect(mediaPlayer, SIGNAL(mutedChanged(bool)), this, SLOT(muteHandler(bool)));
+
+    connect(mediaPlayer, QOverload<QMediaPlayer::Error>::of(&QMediaPlayer::error), this, &VideoPlayer::handleError);
+
+    setLayout(playLayout);
+}
+
+void VideoPlayer::addControls(QLayout *l)
+{
+    previousButton = new QPushButton(this);
+    previousButton->setIcon(QIcon(":/Icons/arrow-left.svg"));
+    nextButton = new QPushButton(this);
+    nextButton->setIcon(QIcon(":/Icons/arrow-right.svg"));
+    playButton = new QPushButton(this);
+    playButton->setIcon(style()->standardIcon(QStyle::SP_MediaPlay));
+    volumeIcon = new QPushButton(this);
+    volumeIcon->setIcon(QIcon(":/Icons/volume.svg"));
+    positionSlider = new QSlider(Qt::Horizontal, this);
+    positionSlider->setRange(0, 0);
+    sliderVolume = new QSlider(Qt::Horizontal, this);
+    sliderVolume->setRange(0, 100);
+    l->addWidget(playButton);
+    l->addWidget(previousButton);
+    l->addWidget(nextButton);
+    l->addWidget(positionSlider);
+    l->addWidget(volumeIcon);
+    l->addWidget(sliderVolume);
+}
+
+void VideoPlayer::closeEvent(QCloseEvent *event)
+{
+    if(mediaPlayer->state() == QMediaPlayer::PlayingState){
+        mediaPlayer->stop();
+        delete mediaPlayer;
+        mediaPlayer = 0;
+    }
+    QWidget::closeEvent(event);
+}
 

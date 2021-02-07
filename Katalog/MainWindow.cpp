@@ -55,10 +55,15 @@ void MainWindow::setController(Controller *c)
 {
     controller = c;
     connect(this, SIGNAL(addFile(Katalog::BaseNode*,std::string)), controller, SLOT(addFile(Katalog::BaseNode*,std::string)));
+
     connect(SaveAction, SIGNAL(triggered(bool)), controller, SLOT(saveCatalog()));
+    connect(GridViewAction, SIGNAL(triggered(bool)), controller, SLOT(requestForGridView()));
+    connect(PlayViewAction, SIGNAL(triggered(bool)), controller, SLOT(requestForPlayView()));
+
     connect(catalogView, SIGNAL(itemExpanded(QTreeWidgetItem*)), controller, SLOT(openDirectory(QTreeWidgetItem*)));
     connect(catalogView, SIGNAL(itemCollapsed(QTreeWidgetItem*)), controller, SLOT(closeDirectory(QTreeWidgetItem*)));
     connect(catalogView, SIGNAL(itemClicked(QTreeWidgetItem*,int)), controller, SLOT(treeItemClicked(QTreeWidgetItem*,int)));
+    connect(catalogView, SIGNAL(itemDoubleClicked(QTreeWidgetItem*,int)), controller, SLOT(treeItemDoubleClicked(QTreeWidgetItem*,int)));
     connect(catalogView, SIGNAL(itemsDeselected()), controller, SLOT(viewGridOnRoot()));
     connect(this, SIGNAL(fileCopied(std::string)), controller, SLOT(copyFile(std::string)));
     connect(this, SIGNAL(fileCutted(std::string)), controller, SLOT(cutFile(std::string)));
@@ -104,18 +109,6 @@ void MainWindow::showGrid(const FileList *files)
     static_cast<GridView*>(screen)->redrawGrid();
 }
 
-/*void MainWindow::showPlayWindow(const FileList &files)
-{
-     screen->close();
-     screenLayout->removeWidget(screen);
-     screen = new VideoPlayer(files);
-     QSizePolicy widgetPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-     widgetPolicy.setHorizontalStretch(3);
-     screen->setSizePolicy(widgetPolicy);
-     screenLayout->addWidget(screen);
-     //connect(screen, SIGNAL(doubleClickedItem(Katalog::BaseNode*)), this, SLOT());
-}*/
-
 void MainWindow::selectFileOnTree(std::string path)
 {
     std::string filename = getFileName(path);
@@ -126,6 +119,28 @@ void MainWindow::selectFileOnTree(std::string path)
             (*i)->setSelected(true);
         }
     }
+}
+
+void MainWindow::showPlayWindow(const Katalog::BaseNode *file)
+{
+    screen->close();
+    screenLayout->removeWidget(screen);
+    screen = new VideoPlayer(file);
+    QSizePolicy widgetPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    widgetPolicy.setHorizontalStretch(3);
+    screen->setSizePolicy(widgetPolicy);
+    screenLayout->addWidget(screen);
+}
+
+void MainWindow::showPlayWindow(const FileList *files)
+{
+    screen->close();
+    screenLayout->removeWidget(screen);
+    screen = new VideoPlayer(files);
+    QSizePolicy widgetPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    widgetPolicy.setHorizontalStretch(3);
+    screen->setSizePolicy(widgetPolicy);
+    screenLayout->addWidget(screen);
 }
 
 void MainWindow::resetTextPath()
@@ -229,11 +244,17 @@ void MainWindow::addMenus(QLayout *layout)
     QMenu *ViewMenu = new QMenu("Visualizza", MenuBar);
     MenuBar->addMenu(ViewMenu);
 
-    QAction *GridView = new QAction("Griglia", ViewMenu);
-    QAction *PlayView = new QAction("Riproduzione", ViewMenu);
+    GridViewAction = new QAction("Griglia", ViewMenu);
+    PlayViewAction = new QAction("Riproduzione", ViewMenu);
 
-    ViewMenu->addAction(GridView);
-    ViewMenu->addAction(PlayView);
+    GridViewAction->setShortcut(QKeySequence("Ctrl+G"));
+    GridViewAction->setShortcutVisibleInContextMenu(true);
+    PlayViewAction->setShortcut(QKeySequence("Ctrl+P"));
+    PlayViewAction->setShortcutVisibleInContextMenu(true);
+
+
+    ViewMenu->addAction(GridViewAction);
+    ViewMenu->addAction(PlayViewAction);
 
     //end view menu
 }
@@ -351,7 +372,6 @@ void MainWindow::doubleClickOnGridItem(Katalog::BaseNode *file)
             for(int i = 0; i < item->childCount(); i++){
                 if(item->child(i)->text(0).toStdString() == file->getName()){
                     catalogView->clearSelection();
-                    //catalogView->setItemSelected(item->child(i), true);
                     item->child(i)->setSelected(true);
                     goToParent = false;
                 }
@@ -362,18 +382,19 @@ void MainWindow::doubleClickOnGridItem(Katalog::BaseNode *file)
     } else { //sto vedendo la root
         QList<QTreeWidgetItem*> items = catalogView->findItems(QString::fromStdString(file->getName()), Qt::MatchFlag::MatchFixedString | Qt::MatchFlag::MatchCaseSensitive, 0);
         for(auto i = items.begin(); i != items.end(); i++){
-            if(!(*i)->parent())   //non devo fare il controllo sul testo in quanto già fatto dalla findItems
+            if(!(*i)->parent())
             {
                 catalogView->clearSelection();
-                //catalogView->setItemSelected(*i, true);
                 (*i)->setSelected(true);
                 break;
             }
         }
     }
 
-    if(file->getFilesCount() > 0)
+    if(file->getFilesCount() > 0 || (dynamic_cast<Katalog::Audio*>(file) == 0 && dynamic_cast<Katalog::Photo*>(file) == 0 && dynamic_cast<Katalog::Video*>(file) == 0))
         showGrid(&file->getFiles());
+    else
+        showPlayWindow(file);
 }
 
 void MainWindow::updatePathString()
@@ -417,5 +438,11 @@ void MainWindow::rename()
         }
     }
 
+}
+
+void MainWindow::closeEvent(QCloseEvent *event)
+{
+    controller->saveCatalog();
+    QWidget::closeEvent(event);
 }
 

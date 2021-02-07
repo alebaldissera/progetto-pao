@@ -35,9 +35,11 @@ public:
     void updateTree(const Katalog::BaseNode* root);
     void clearTree();
     void showGrid(const FileList* files);
-    void showPlayWindow(const FileList& files);
+    //void showPlayWindow(const FileList& files);
     std::string getTextPath();
     void selectFileOnTree(std::string);
+    void showPlayWindow(const Katalog::BaseNode* file);
+    void showPlayWindow(const FileList* files);
 
 public slots:
     void resetTextPath();
@@ -50,6 +52,8 @@ private:
 
     //menu actions
     QAction *SaveAction;
+    QAction *GridViewAction;
+    QAction *PlayViewAction;
 
     Controller *controller;
 
@@ -82,12 +86,14 @@ private slots:
     void addDirectory();
     void doubleClickOnGridItem(Katalog::BaseNode*);
     void updatePathString();
-    //void doubleClickToPlayItem(Katalog::BaseNode*);
     void copy();
     void cut();
     void paste();
     void remove();
     void rename();
+
+protected:
+    void closeEvent(QCloseEvent *event);
 };
 
 #endif // MAINWINDOW_H

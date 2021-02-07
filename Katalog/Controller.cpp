@@ -57,6 +57,16 @@ void Controller::treeItemClicked(QTreeWidgetItem *item, int col)
     }
 }
 
+void Controller::treeItemDoubleClicked(QTreeWidgetItem *item, int col)
+{
+    Katalog::BaseNode* file = catalogo.getFile(getItemPath(item));
+    if(file->getFilesCount()){
+        mainwindow.showGrid(&file->getFiles());
+    } else {
+        mainwindow.showPlayWindow(file);
+    }
+}
+
 void Controller::viewGridOnRoot()
 {
     mainwindow.showGrid(&catalogo.getRoot()->getFiles());
@@ -115,13 +125,31 @@ void Controller::pathTextChanged()
 {
     std::string path = mainwindow.getTextPath();
     try {
-        mainwindow.showGrid(&catalogo.getFile(path)->getFiles());
+        if(catalogo.getFile(path)->getFilesCount())
+           mainwindow.showGrid(&catalogo.getFile(path)->getFiles());
+        else
+           mainwindow.showPlayWindow(catalogo.getFile(path));
+
         mainwindow.selectFileOnTree(path);
     }  catch (std::runtime_error &e) { //il file non esiste resetto la path
         mainwindow.resetTextPath();
         QMessageBox::critical(nullptr, "File non valido", "Path inserita non valida");
     }
 
+}
+
+void Controller::requestForGridView()
+{
+    std::string path = mainwindow.getTextPath();
+    if(catalogo.getFile(path)->getFilesCount() > 0){
+        mainwindow.showGrid(&catalogo.getFile(path)->getFiles());
+    }
+}
+
+void Controller::requestForPlayView()
+{
+    std::string path = mainwindow.getTextPath();
+    mainwindow.showPlayWindow(&catalogo.getFile(path)->getFiles());
 }
 
 std::string Controller::getItemPath(QTreeWidgetItem *item)
