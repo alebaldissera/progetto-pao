@@ -24,6 +24,7 @@ Katalog::Photo::Photo(string _name, string _path): Directory(_name, _path)
         size = f.size();
         f.close();
     }
+    delete player;
 }
 
 Katalog::Photo* Katalog::Photo::clone() const

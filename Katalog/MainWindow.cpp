@@ -366,6 +366,12 @@ void MainWindow::addDirectory()
 void MainWindow::doubleClickOnGridItem(Katalog::BaseNode *file)
 {
     //update del file selezionato nel treewidget
+
+    /*
+     *
+     * da rivedere questo spezone di codice perchè se seleziono un file del secondo livello dalla griglia questo non viene aggiornato nel treeview
+     *
+     */
     if(!catalogView->selectedItems().empty() && catalogView->selectedItems()[0]->parent()) {
         QTreeWidgetItem *item = catalogView->selectedItems().at(0); //sufficiente perchè si può selezionare un file solo
         bool goToParent = true;
@@ -392,7 +398,7 @@ void MainWindow::doubleClickOnGridItem(Katalog::BaseNode *file)
         }
     }
 
-    if(file->getFilesCount() > 0 || (dynamic_cast<Katalog::Audio*>(file) == 0 && dynamic_cast<Katalog::Photo*>(file) == 0 && dynamic_cast<Katalog::Video*>(file) == 0))
+    if(file && (file->getFilesCount() > 0 || (dynamic_cast<Katalog::Audio*>(file) == 0 && dynamic_cast<Katalog::Photo*>(file) == 0 && dynamic_cast<Katalog::Video*>(file) == 0)))
         showGrid(&file->getFiles());
     else
         showPlayWindow(file);
