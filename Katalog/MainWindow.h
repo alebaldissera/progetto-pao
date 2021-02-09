@@ -35,6 +35,7 @@ public:
     void updateTree(const Katalog::BaseNode* root);
     void clearTree();
     void showGrid(const FileList* files);
+    void closeGrid();
     //void showPlayWindow(const FileList& files);
     std::string getTextPath();
     void selectFileOnTree(std::string);

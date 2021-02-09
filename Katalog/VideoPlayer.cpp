@@ -17,21 +17,25 @@ VideoPlayer::VideoPlayer(const Katalog::BaseNode* sel_file, QWidget *parent) : Q
 VideoPlayer::VideoPlayer(const FileList *fileVector, QWidget *parent) : QWidget(parent), files(fileVector), mediaIndex(0)
 {
     buildWidget();
-    bool soloCartelle = true;
-    for(unsigned int i = 0; i < files->size() && soloCartelle; ++i){
-        if(dynamic_cast<Katalog::Photo*>((*files)[i].pointer()) || dynamic_cast<Katalog::Audio*>((*files)[i].pointer()) || dynamic_cast<Katalog::Video*>((*files)[i].pointer())){
-            mediaIndex = i;
-            soloCartelle = false;
+    if(files){
+        bool soloCartelle = true;
+        for(unsigned int i = 0; i < files->size() && soloCartelle; ++i){
+            if(dynamic_cast<Katalog::Photo*>((*files)[i].pointer()) || dynamic_cast<Katalog::Audio*>((*files)[i].pointer()) || dynamic_cast<Katalog::Video*>((*files)[i].pointer())){
+                mediaIndex = i;
+                soloCartelle = false;
+            }
         }
-    }
 
-    if(soloCartelle){
-        errorLabel->setText("Non ci sono file riproducibili");
-        playButton->setDisabled(true);
-        nextButton->setDisabled(true);
-        previousButton->setDisabled(true);
+        if(soloCartelle){
+            errorLabel->setText("Non ci sono file riproducibili");
+            playButton->setDisabled(true);
+            nextButton->setDisabled(true);
+            previousButton->setDisabled(true);
+        } else {
+            mediaPlayer->setMedia(QUrl::fromLocalFile(QString::fromStdString((*fileVector)[mediaIndex]->getPath())));
+        }
     } else {
-        mediaPlayer->setMedia(QUrl::fromLocalFile(QString::fromStdString((*fileVector)[mediaIndex]->getPath())));
+        errorLabel->setText("Non ci sono file riproducibili");
     }
 }
 

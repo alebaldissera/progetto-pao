@@ -14,6 +14,7 @@ namespace Katalog {
 	class Photo : public Directory {
 	public:
 		Photo(string _name, string _path);
+        virtual ~Photo() = default;
         Photo* clone() const override;
         long getSize() const override;
         long getAllSize() const override;

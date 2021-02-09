@@ -15,6 +15,7 @@ Katalog::Audio::Audio(string _name, string _path): Directory(_name, _path)
         size = f.size();
         f.close();
     }
+    delete player;
 }
 
 Katalog::Audio* Katalog::Audio::clone() const

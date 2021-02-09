@@ -24,7 +24,6 @@ private:
 
 protected:
     long size;
-    long allSize;
 
 public:
     BaseNode(string _name, string _path = "");

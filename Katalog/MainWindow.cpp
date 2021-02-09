@@ -99,6 +99,7 @@ void MainWindow::showGrid(const FileList *files)
 {
     screen->close(); //gridview ha il flag WA_DeleteOnClose impostato a true quindi il widget viene distrutto quando viene chiuso, dunque non è necessaria una delete
     screenLayout->removeWidget(screen);
+    delete screen;
     screen = new GridView(files);
     QSizePolicy widgetPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     widgetPolicy.setHorizontalStretch(3);
@@ -106,7 +107,7 @@ void MainWindow::showGrid(const FileList *files)
     screenLayout->addWidget(screen);
     connect(screen, SIGNAL(doubleClickedItem(Katalog::BaseNode*)), this, SLOT(doubleClickOnGridItem(Katalog::BaseNode*)));
     connect(controller, SIGNAL(catalogUpdated()), screen, SLOT(redrawGrid()));
-    static_cast<GridView*>(screen)->redrawGrid();
+    //static_cast<GridView*>(screen)->redrawGrid();
 }
 
 void MainWindow::selectFileOnTree(std::string path)
@@ -317,11 +318,11 @@ std::string MainWindow::getItemPath(QTreeWidgetItem *item)
 void MainWindow::addPhoto()
 {
     QStringList sources = QFileDialog::getOpenFileNames(this, tr("Apri foto"), "/home", tr("Immagini (*.png *.jpg)"));
+    std::string destination = getSelectedFilePath();
     if(!sources.empty()) {
         for(auto i = sources.begin(); i != sources.end(); ++i){
             std::string source = i->toStdString();
             std::string filename = getFileName(source);
-            std::string destination = getSelectedFilePath();
             emit addFile(new Katalog::Photo(filename, source), destination);
         }
     }
@@ -330,11 +331,11 @@ void MainWindow::addPhoto()
 void MainWindow::addAudio()
 {
     QStringList sources = QFileDialog::getOpenFileNames(this, tr("Apri foto"), "/home", tr("Audio (*.mp3 *.flac)"));
+    std::string destination = getSelectedFilePath();
     if(!sources.empty()) {
         for(auto i = sources.begin(); i != sources.end(); ++i){
             std::string source = i->toStdString();
             std::string filename = getFileName(source);
-            std::string destination = getSelectedFilePath();
             emit addFile(new Katalog::Audio(filename, source), destination);
         }
     }
@@ -343,11 +344,11 @@ void MainWindow::addAudio()
 void MainWindow::addVideo()
 {
     QStringList sources = QFileDialog::getOpenFileNames(this, tr("Apri foto"), "/home", tr("Immagini (*.mp4 *.avi)"));
+    std::string destination = getSelectedFilePath();
     if(!sources.empty()) {
         for(auto i = sources.begin(); i != sources.end(); ++i){
             std::string source = i->toStdString();
             std::string filename = getFileName(source);
-            std::string destination = getSelectedFilePath();
             emit addFile(new Katalog::Video(filename, source), destination);
         }
     }

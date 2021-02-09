@@ -156,13 +156,6 @@ public:
      */
     const T &operator[](const const_iterator i) const;
 
-    /**
-     * @brief operator []: Ottiene un riferimento all'elemento alla posizione indicata
-     * @param i: Indice all'elemento da prelevare
-     * @return Oggetto all'indice i
-     */
-    //T &operator[](const u_int i) const;
-
 private:
     T* list;
     u_int lsize;

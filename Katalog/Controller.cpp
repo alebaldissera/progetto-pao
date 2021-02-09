@@ -51,10 +51,10 @@ void Controller::closeDirectory(QTreeWidgetItem *node)
 
 void Controller::treeItemClicked(QTreeWidgetItem *item, int col)
 {
-    Katalog::BaseNode* file = catalogo.getFile(getItemPath(item));
+    /*Katalog::BaseNode* file = catalogo.getFile(getItemPath(item));
     if(file->getFilesCount()){
         mainwindow.showGrid(&file->getFiles());
-    }
+    }*/
 }
 
 void Controller::treeItemDoubleClicked(QTreeWidgetItem *item, int col)
@@ -106,8 +106,11 @@ void Controller::pasteFile(std::string dest)
 void Controller::removeFile(std::string file)
 {
     try {
+        mainwindow.showGrid(nullptr);
+        //mainwindow.showGrid(&catalogo.getRoot()->getFiles());
         catalogo.remove(file);
         mainwindow.updateTree(catalogo.getRoot().pointer());
+        mainwindow.showGrid(&catalogo.getRoot()->getFiles());
         emit catalogUpdated();
     } catch (std::runtime_error &e){
         cout << e.what() << endl;
