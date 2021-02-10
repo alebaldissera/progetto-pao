@@ -32,8 +32,7 @@ PreviewWindow::PreviewWindow(Katalog::BaseNode* sel_file, QWidget *parent) : QWi
         QImage photoimg(":/Icons/image-gallery.svg");
         icon->setPixmap(QPixmap::fromImage(photoimg.scaled(75,200, Qt::KeepAspectRatio, Qt::SmoothTransformation)));
         il = new ImageLoader(this, QString::fromStdString(sel_file->getPath()), this);
-        //connect(il, &ImageLoader::finished, il, &QObject::deleteLater);
-        il->start(QThread::IdlePriority);
+        il->start(QThread::LowestPriority);
     }
     else if(sel_file == dynamic_cast<Katalog::Video*>(sel_file))
     {
@@ -90,9 +89,9 @@ void PreviewWindow::paintEvent(QPaintEvent *event)
 
 void PreviewWindow::mouseDoubleClickEvent(QMouseEvent *event)
 {
+    QWidget::mouseDoubleClickEvent(event);
     if(event->button() == Qt::LeftButton)
         emit mouseDoubleClicked(filePtr);
-    QWidget::mouseDoubleClickEvent(event);
 }
 
 ImageLoader::ImageLoader(PreviewWindow *w, QString file, QWidget *parent): QThread(parent), obj(w), path(file), img(nullptr) {}

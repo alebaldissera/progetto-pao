@@ -33,7 +33,7 @@ public:
      * @param sel_file: è il file selezionato dall'utente
      * @param parent: è il parent del widget
      */
-    explicit PreviewWindow(Katalog::BaseNode* sel_file, QWidget *parent);
+    explicit PreviewWindow(Katalog::BaseNode* sel_file, QWidget *parent = nullptr);
     ~PreviewWindow();
 private:
     void enterEvent(QEvent *event);

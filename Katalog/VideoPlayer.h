@@ -23,13 +23,14 @@
 #include "Audio.h"
 #include "FlowLayout.h"
 #include "PreviewWindow.h"
+#include <QStackedLayout>
 
-QT_BEGIN_NAMESPACE
+/*QT_BEGIN_NAMESPACE
 class QAbstractButton;
 class QSlider;
 class QLabel;
 class QUrl;
-QT_END_NAMESPACE
+QT_END_NAMESPACE*/
 
 typedef Katalog::vector<Katalog::DeepPtr<Katalog::BaseNode>> FileList;
 
@@ -39,7 +40,11 @@ class VideoPlayer : public QWidget
 public:
     VideoPlayer(const Katalog::BaseNode* sel_file, QWidget *parent = nullptr);
     VideoPlayer(const FileList *fileVector, QWidget *parent = nullptr);
-    virtual ~VideoPlayer() = default;
+    virtual ~VideoPlayer();
+
+public slots:
+    void setFile(const Katalog::BaseNode* file);
+    void setFolder(const FileList* filesVector);
 
 private slots:
     void playPause();
@@ -53,6 +58,7 @@ private slots:
     void muteHandler(bool isMute);
     void nextMedia();
     void previousMedia();
+    void setMedia(const Katalog::BaseNode* file);
 
 private:
     QVBoxLayout* playLayout;
@@ -69,6 +75,10 @@ private:
     QSlider *positionSlider;
     QSlider* sliderVolume;
     QLabel *errorLabel;
+
+    QLabel *imageLabel;
+    QImage *image;
+    QStackedLayout *staked;
 
     const FileList* files;
     unsigned int mediaIndex;

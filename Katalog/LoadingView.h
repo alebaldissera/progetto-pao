@@ -10,6 +10,8 @@
 #include <QScreen>
 #include <QGuiApplication>
 
+#include <QThread>
+
 /*
  * View da mostrare nei caricamenti dal filesystem e da distruggere una volta completati
  * Pensata per essere gestita completamente dal controller

@@ -26,4 +26,5 @@ LoadingView::LoadingView(QWidget *parent) : QWidget(parent)
     setWindowIcon(QIcon(":/Icons/katalog.svg"));
     setWindowTitle("Katalog");
     move(QGuiApplication::screens().at(0)->availableGeometry().center() - frameGeometry().center());
+    setAttribute(Qt::WA_DeleteOnClose);
 }

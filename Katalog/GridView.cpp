@@ -3,6 +3,13 @@
 GridView::GridView(const FileList *fileVector, QWidget *parent) : QWidget(parent), files(fileVector)
 {
     grid = new FlowLayout(this, 20, 10, 10);
+    QScrollArea* scroll = new QScrollArea(this);
+    scroll->setVisible(true);
+    scroll->setWidgetResizable(true);
+    //scroll->setVerticalScrollBarPolicy(Qt::ScrollBarAlwaysOn);
+    QWidget *aux = new QWidget(this);
+    aux->setLayout(grid);
+    scroll->setWidget(aux);
 
     if(files) {
         for(auto i = files->begin(); i != files->end(); i++)
@@ -12,9 +19,21 @@ GridView::GridView(const FileList *fileVector, QWidget *parent) : QWidget(parent
             grid->addWidget(icon);
         }
     }
-    setLayout(grid);
+
+    QBoxLayout *l = new QBoxLayout(QBoxLayout::TopToBottom, this);
+    l->setMargin(0);
+    l->setSpacing(0);
+    l->addWidget(scroll);
+    setLayout(l);
 
     setAttribute(Qt::WA_DeleteOnClose, true);
+}
+
+void GridView::setFiles(const FileList* filesVector)
+{
+    if(filesVector == files) return;
+    files = filesVector;
+    redrawGrid();
 }
 
 void GridView::redrawGrid()
@@ -22,7 +41,7 @@ void GridView::redrawGrid()
     QLayoutItem *item;
     while ((item = grid->takeAt(0)))
     {
-        delete item->widget();
+        item->widget()->close();
         delete item;
     }
     if(files)

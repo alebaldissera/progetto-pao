@@ -3,20 +3,44 @@
 VideoPlayer::VideoPlayer(const Katalog::BaseNode* sel_file, QWidget *parent) : QWidget(parent), files(nullptr), mediaIndex(0)
 {
     buildWidget();
-    if(dynamic_cast<const Katalog::Photo*>(sel_file) || dynamic_cast<const Katalog::Audio*>(sel_file) || dynamic_cast<const Katalog::Video*>(sel_file)) {
-        errorLabel->setText(QString::fromStdString(sel_file->getName()));
-        mediaPlayer->setMedia(QUrl::fromLocalFile(QString::fromStdString(sel_file->getPath())));
+    setFile(sel_file);
+    setAttribute(Qt::WA_DeleteOnClose, true); //permette di deallocare il widget quando viene chiuso
+}
+
+VideoPlayer::VideoPlayer(const FileList *fileVector, QWidget *parent) : QWidget(parent), files(nullptr), mediaIndex(0)
+{
+    buildWidget();
+    setFolder(fileVector);
+    setAttribute(Qt::WA_DeleteOnClose, true);
+}
+
+VideoPlayer::~VideoPlayer()
+{
+    if(image) delete image;
+}
+
+void VideoPlayer::setFile(const Katalog::BaseNode *file)
+{
+    mediaPlayer->stop();
+    mediaPlayer->setMedia(QMediaContent());
+    files = nullptr;
+    if(file != nullptr && (dynamic_cast<const Katalog::Photo*>(file) || dynamic_cast<const Katalog::Audio*>(file) || dynamic_cast<const Katalog::Video*>(file))) {
+        setMedia(file);
     } else {
         errorLabel->setText("Non ci sono file riproducibili");
     }
     previousButton->setDisabled(true);
     nextButton->setDisabled(true);
-    setAttribute(Qt::WA_DeleteOnClose, true); //permette di deallocare il widget quando viene chiuso
+    playButton->setDisabled(false);
 }
 
-VideoPlayer::VideoPlayer(const FileList *fileVector, QWidget *parent) : QWidget(parent), files(fileVector), mediaIndex(0)
+void VideoPlayer::setFolder(const FileList *filesVector)
 {
-    buildWidget();
+    mediaPlayer->stop();
+    mediaPlayer->setMedia(QMediaContent());
+    files = filesVector;
+    mediaIndex = 0;
+
     if(files){
         bool soloCartelle = true;
         for(unsigned int i = 0; i < files->size() && soloCartelle; ++i){
@@ -32,10 +56,16 @@ VideoPlayer::VideoPlayer(const FileList *fileVector, QWidget *parent) : QWidget(
             nextButton->setDisabled(true);
             previousButton->setDisabled(true);
         } else {
-            mediaPlayer->setMedia(QUrl::fromLocalFile(QString::fromStdString((*fileVector)[mediaIndex]->getPath())));
+            playButton->setDisabled(false);
+            nextButton->setDisabled(false);
+            previousButton->setDisabled(false);
+            setMedia((*files)[mediaIndex].pointer());
         }
     } else {
         errorLabel->setText("Non ci sono file riproducibili");
+        playButton->setDisabled(true);
+        nextButton->setDisabled(true);
+        previousButton->setDisabled(true);
     }
 }
 
@@ -112,24 +142,60 @@ void VideoPlayer::muteHandler(bool isMute)
 
 void VideoPlayer::nextMedia()
 {
-    if((++mediaIndex) == files->size()) mediaIndex = 0; //avanzo di un media file
-    while(!dynamic_cast<Katalog::Photo*>((*files)[mediaIndex].pointer()) && !dynamic_cast<Katalog::Audio*>((*files)[mediaIndex].pointer()) && !dynamic_cast<Katalog::Video*>((*files)[mediaIndex].pointer()))
-    {   //avanzo finchè non trovo un file adatto
-        if((++mediaIndex) == files->size()) mediaIndex = 0;
+    if(files) {
+        if((++mediaIndex) == files->size()) mediaIndex = 0; //avanzo di un media file
+        while(!dynamic_cast<Katalog::Photo*>((*files)[mediaIndex].pointer()) && !dynamic_cast<Katalog::Audio*>((*files)[mediaIndex].pointer()) && !dynamic_cast<Katalog::Video*>((*files)[mediaIndex].pointer()))
+        {   //avanzo finchè non trovo un file adatto
+            if((++mediaIndex) == files->size()) mediaIndex = 0;
+        }
+        setMedia((*files)[mediaIndex].pointer());
     }
-    mediaPlayer->setMedia(QUrl::fromLocalFile(QString::fromStdString((*files)[mediaIndex]->getPath())));
 }
 
 void VideoPlayer::previousMedia()
 {
-    if(mediaIndex == 0) mediaIndex = files->size() - 1; //torno indietro di un file
-    else --mediaIndex;
-    while(!dynamic_cast<Katalog::Photo*>((*files)[mediaIndex].pointer()) && !dynamic_cast<Katalog::Audio*>((*files)[mediaIndex].pointer()) && !dynamic_cast<Katalog::Video*>((*files)[mediaIndex].pointer()))
-    {   //torno indietro di un file finchè non ne trovo uno di riproducibile
+    if(files){
         if(mediaIndex == 0) mediaIndex = files->size() - 1; //torno indietro di un file
         else --mediaIndex;
+        while(!dynamic_cast<Katalog::Photo*>((*files)[mediaIndex].pointer()) && !dynamic_cast<Katalog::Audio*>((*files)[mediaIndex].pointer()) && !dynamic_cast<Katalog::Video*>((*files)[mediaIndex].pointer()))
+        {   //torno indietro di un file finchè non ne trovo uno di riproducibile
+            if(mediaIndex == 0) mediaIndex = files->size() - 1; //torno indietro di un file
+            else --mediaIndex;
+        }
+        setMedia((*files)[mediaIndex].pointer());
     }
-    mediaPlayer->setMedia(QUrl::fromLocalFile(QString::fromStdString((*files)[mediaIndex]->getPath())));
+}
+
+void VideoPlayer::setMedia(const Katalog::BaseNode *file)
+{
+    mediaPlayer->setMedia(QMediaContent());
+    if(file && (dynamic_cast<const Katalog::Photo*>(file) || dynamic_cast<const Katalog::Audio*>(file) || dynamic_cast<const Katalog::Video*>(file))) {
+        if(!dynamic_cast<const Katalog::Video*>(file)){
+            //immagine
+            if(image) delete image;
+            if(!dynamic_cast<const Katalog::Audio*>(file))
+            {
+                playButton->setDisabled(true);
+                image = new QImage(QString::fromStdString(file->getPath()));
+            }
+            else
+            {
+                playButton->setEnabled(true);
+                image = new QImage(":/Icons/speaker.svg");
+                mediaPlayer->setMedia(QUrl::fromLocalFile(QString::fromStdString(file->getPath())));
+            }
+            imageLabel->setPixmap(QPixmap::fromImage(image->scaled(std::min(width(), image->width()), std::min(height(), image->height()), Qt::KeepAspectRatio, Qt::SmoothTransformation)));
+            staked->setCurrentIndex(1);
+        } else {
+            //video o audio
+            playButton->setEnabled(true);
+            mediaPlayer->setMedia(QUrl::fromLocalFile(QString::fromStdString(file->getPath())));
+            staked->setCurrentIndex(0);
+        }
+        errorLabel->setText(QString::fromStdString(file->getName()));
+    }
+    else
+        errorLabel->setText("Non ci sono file riproducibili");
 }
 
 void VideoPlayer::buildWidget()
@@ -148,7 +214,16 @@ void VideoPlayer::buildWidget()
     mediaPlayer->setVideoOutput(videoWidget);
     sliderVolume->setValue(mediaPlayer->volume());
 
-    playLayout->addWidget(videoWidget);
+    imageLabel = new QLabel(this);
+    imageLabel->setAlignment(Qt::AlignCenter);
+    image = nullptr;
+    staked = new QStackedLayout(this);
+    staked->setMargin(0);
+    staked->addWidget(videoWidget);
+    staked->addWidget(imageLabel);
+    staked->setCurrentIndex(0);
+
+    playLayout->addLayout(staked);
     playLayout->addLayout(controlsLayout);
     playLayout->addWidget(errorLabel);
 

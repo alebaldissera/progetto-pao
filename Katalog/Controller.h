@@ -48,7 +48,7 @@ private:
 
     std::string clip;
     bool operation; //true copia, false taglia
-
 };
+
 
 #endif // CONTROLLER_H
