@@ -63,9 +63,11 @@ private slots:
 private:
     QVBoxLayout* playLayout;
     QHBoxLayout* controlsLayout;
+    QStackedLayout *view;
 
     QMediaPlayer* mediaPlayer;
-    QMediaPlaylist *playlist;
+    QVideoWidget *videoWidget;
+    QLabel *imageView;
 
     QPushButton *playButton;
     QPushButton *previousButton;
@@ -85,9 +87,11 @@ private:
 
     void buildWidget();
     void addControls(QLayout *l);
+    void setMedia(const Katalog::BaseNode*);
 
 protected:
     void closeEvent(QCloseEvent *event);
+    void resizeEvent(QResizeEvent *event);
 };
 
 #endif // VIDEOPLAYER_H
