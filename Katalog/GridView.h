@@ -11,6 +11,8 @@
 #include "Audio.h"
 #include "FlowLayout.h"
 #include "PreviewWindow.h"
+#include <QScrollArea>
+#include <QBoxLayout>
 
 typedef Katalog::vector<Katalog::DeepPtr<Katalog::BaseNode>> FileList;
 
@@ -20,8 +22,10 @@ class GridView : public QWidget
 public:
     explicit GridView(const FileList *fileVector, QWidget *parent = nullptr);
     virtual ~GridView() = default;
+
 public slots:
     void redrawGrid();
+    void setFiles(const FileList* filesVector);
 
 signals:
     void doubleClickedItem(Katalog::BaseNode*);

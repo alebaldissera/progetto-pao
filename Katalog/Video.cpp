@@ -16,6 +16,7 @@ Katalog::Video::Video(string _name, string _path): Directory(_name, _path)
         size = f.size();
         f.close();
     }
+    delete player;
 }
 
 Katalog::Video* Katalog::Video::clone() const

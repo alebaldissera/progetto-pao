@@ -15,6 +15,12 @@ class Catalogo
 private:
     DeepPtr<BaseNode> root;
     /**
+     * @brief regex_fun: funzione che permette il controllo del percorso di un file con il metodo della regex
+     * @param   string: è il percorso che si vuole esaminare per vedere se esiste o meno
+     * @return  BaseNode*: ritorna il nodo trovato corrispondente al percorso inserito, se esiste, altrimenti ritorna un nullptr
+     */
+    BaseNode* regex_fun(std::string);
+    /**
      * @brief remove_aux: si occupa di ritornare il puntatore alla directory che conteneva il file che è stato eliminato
      * @param string: è il percorso del file da rimuovere
      * @return puntatore alla directory che conteneva il file eliminato
@@ -27,13 +33,6 @@ public:
     Catalogo();
     Catalogo(DeepPtr<BaseNode>); //necessario per costruzione catalogo da radice
     ~Catalogo();
-
-    /**
-     * @brief regex_fun: funzione che permette il controllo del percorso di un file con il metodo della regex
-     * @param   string: è il percorso che si vuole esaminare per vedere se esiste o meno
-     * @return  BaseNode*: ritorna il nodo trovato corrispondente al percorso inserito, se esiste, altrimenti ritorna un nullptr
-     */
-    BaseNode* regex_fun(std::string);
     /**
      * @brief   add: aggiunge un file alla directory scelta
      * @param   string: è il name del file da inserire

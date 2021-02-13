@@ -8,9 +8,10 @@
 
 Katalog::Photo::Photo(string _name, string _path): Directory(_name, _path)
 {
-    QImage img = QImage(QString::fromStdString(_path));
-    risoluzione.first = img.width();
-    risoluzione.second = img.height();
+    QImage *img = new QImage(QString::fromStdString(_path));
+    risoluzione.first = img->width();
+    risoluzione.second = img->height();
+    delete img;
     auto player = new QMediaPlayer;
     player->setMedia(QUrl::fromLocalFile(QString::fromStdString(_path)));
     //viene fatto in 3 passaggi per evitare un warning    
@@ -23,6 +24,7 @@ Katalog::Photo::Photo(string _name, string _path): Directory(_name, _path)
         size = f.size();
         f.close();
     }
+    delete player;
 }
 
 Katalog::Photo* Katalog::Photo::clone() const

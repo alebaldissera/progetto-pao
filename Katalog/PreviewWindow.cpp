@@ -6,13 +6,13 @@ using std::cout;
 using std::endl;
 //end debut stuff
 
-PreviewWindow::PreviewWindow(Katalog::BaseNode* sel_file, QWidget *parent) : QWidget(parent), defaultColor(QWidget::palette().color(QWidget::backgroundRole())), filePtr(sel_file)
+PreviewWindow::PreviewWindow(Katalog::BaseNode* sel_file, QWidget *parent) : QWidget(parent), defaultColor(QWidget::palette().color(QWidget::backgroundRole())), filePtr(sel_file), il(nullptr)
 {
     QVBoxLayout *mainLayout = new QVBoxLayout(this);
     mainLayout->setSpacing(10);
     mainLayout->setMargin(10);
 
-    QLabel *icon = new QLabel(this);
+    icon = new QLabel(this);
     QLabel *namefile = new QLabel(QString::fromStdString(sel_file->getName()), this);
 
     icon->setStyleSheet("background-color: rgba(0,0,0,0);");
@@ -22,7 +22,6 @@ PreviewWindow::PreviewWindow(Katalog::BaseNode* sel_file, QWidget *parent) : QWi
     namefile->setMaximumHeight(200);
     namefile->setAlignment(Qt::AlignLeft);
 
-
     if (sel_file == dynamic_cast<Katalog::Audio*>(sel_file))
     {
         QImage audioimg(":/Icons/speaker.svg");
@@ -30,10 +29,10 @@ PreviewWindow::PreviewWindow(Katalog::BaseNode* sel_file, QWidget *parent) : QWi
     }
     else if(sel_file == dynamic_cast<Katalog::Photo*>(sel_file))
     {
-        /*QImage photoimg(":/Icons/image-gallery.svg");
-        icon->setPixmap(QPixmap::fromImage(photoimg.scaled(75,200, Qt::KeepAspectRatio, Qt::SmoothTransformation)));*/
-        QImage photoimg(QString::fromStdString(sel_file->getPath()));
+        QImage photoimg(":/Icons/image-gallery.svg");
         icon->setPixmap(QPixmap::fromImage(photoimg.scaled(75,200, Qt::KeepAspectRatio, Qt::SmoothTransformation)));
+        il = new ImageLoader(this, QString::fromStdString(sel_file->getPath()), this);
+        il->start(QThread::LowestPriority);
     }
     else if(sel_file == dynamic_cast<Katalog::Video*>(sel_file))
     {
@@ -51,6 +50,16 @@ PreviewWindow::PreviewWindow(Katalog::BaseNode* sel_file, QWidget *parent) : QWi
     setToolTip(QString::fromStdString(filePtr->getInfo()));
     setAttribute(Qt::WA_Hover, true);
     setAttribute(Qt::WA_DeleteOnClose, true);
+}
+
+PreviewWindow::~PreviewWindow()
+{
+    if(il != nullptr){
+        if(il->isRunning())
+            il->terminate();
+        il->wait();
+        delete il;
+    }
 }
 
 void PreviewWindow::enterEvent(QEvent *event)
@@ -80,7 +89,23 @@ void PreviewWindow::paintEvent(QPaintEvent *event)
 
 void PreviewWindow::mouseDoubleClickEvent(QMouseEvent *event)
 {
+    QWidget::mouseDoubleClickEvent(event);
     if(event->button() == Qt::LeftButton)
         emit mouseDoubleClicked(filePtr);
-    QWidget::mouseDoubleClickEvent(event);
+}
+
+ImageLoader::ImageLoader(PreviewWindow *w, QString file, QWidget *parent): QThread(parent), obj(w), path(file), img(nullptr) {}
+
+ImageLoader::~ImageLoader()
+{
+    if(img) delete img;
+}
+
+void ImageLoader::run()
+{
+    if(img) delete img;
+    img = new QImage(path);
+    obj->icon->setPixmap(QPixmap::fromImage(img->scaled(75,200, Qt::KeepAspectRatio, Qt::SmoothTransformation)));
+    delete img;
+    img = nullptr;
 }

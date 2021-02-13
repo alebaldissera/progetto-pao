@@ -1,27 +1,18 @@
 #include "Controller.h"
 
-//debug stuff
-#include <iostream>
-using std::cout;
-using std::endl;
-//end debug stuff
-
 Controller::Controller(Katalog::Catalogo &cat, MainWindow &mw, QObject *parent) : QObject(parent), catalogo(cat), mainwindow(mw)
 {
-    LoadingView *lw = new LoadingView;
-    lw->show();
+    LoadingView lv;
+    lv.show();
+
     mainwindow.setController(this);
 
-    try{
-        catalogo = Katalog::IOManager::importCatalogFromFile("Katalog.xml");
-        mainwindow.updateTree(catalogo.getRoot().pointer());
-        mainwindow.showGrid(&catalogo.getRoot()->getFiles());
-    }catch (std::runtime_error &e){
-        QMessageBox m(QMessageBox::Critical, "Errore lettura catalog", e.what(), QMessageBox::Cancel);
-    }
+    catalogo = Katalog::IOManager::importCatalogFromFile("Katalog.xml");
+    mainwindow.updateTree(catalogo.getRoot().pointer());
+    mainwindow.showGrid(&catalogo.getRoot()->getFiles());
 
     mainwindow.show();
-    delete lw;
+    lv.close();
 }
 
 void Controller::addFile(Katalog::BaseNode *file, std::string destination)
@@ -52,7 +43,7 @@ void Controller::closeDirectory(QTreeWidgetItem *node)
 void Controller::treeItemClicked(QTreeWidgetItem *item, int col)
 {
     Katalog::BaseNode* file = catalogo.getFile(getItemPath(item));
-    if(file->getFilesCount()){
+    if(file->getFilesCount() > 0){
         mainwindow.showGrid(&file->getFiles());
     }
 }
@@ -60,11 +51,8 @@ void Controller::treeItemClicked(QTreeWidgetItem *item, int col)
 void Controller::treeItemDoubleClicked(QTreeWidgetItem *item, int col)
 {
     Katalog::BaseNode* file = catalogo.getFile(getItemPath(item));
-    if(file->getFilesCount()){
-        mainwindow.showGrid(&file->getFiles());
-    } else {
+    if(file->getFilesCount() == 0 && (dynamic_cast<Katalog::Photo*>(file) || dynamic_cast<Katalog::Audio*>(file) || dynamic_cast<Katalog::Video*>(file)))
         mainwindow.showPlayWindow(file);
-    }
 }
 
 void Controller::viewGridOnRoot()
@@ -87,6 +75,8 @@ void Controller::cutFile(std::string file)
 void Controller::pasteFile(std::string dest)
 {
     if(clip != ""){
+        mainwindow.showPlayWindow(static_cast<Katalog::BaseNode*>(nullptr));
+        mainwindow.showGrid(nullptr);
         if(operation) //copia
         {
             auto* file = catalogo.getFile(clip);
@@ -99,6 +89,7 @@ void Controller::pasteFile(std::string dest)
         }
         clip = "";
         mainwindow.updateTree(catalogo.getRoot().pointer());
+        mainwindow.showGrid(&catalogo.getFile(dest)->getFiles());
         emit catalogUpdated();
     }
 }
@@ -106,11 +97,15 @@ void Controller::pasteFile(std::string dest)
 void Controller::removeFile(std::string file)
 {
     try {
+        //prima tolgo tutti i riferimenti agli elementi della view in modo da evitare di dereferenziare del garbage quando si fa un update
+        mainwindow.showGrid(nullptr);
+        mainwindow.showPlayWindow(static_cast<Katalog::BaseNode*>(nullptr)); //devo fare la conversione per non avere ambiguità con gli overload delle funzioni
         catalogo.remove(file);
         mainwindow.updateTree(catalogo.getRoot().pointer());
+        mainwindow.showGrid(&catalogo.getRoot()->getFiles());
         emit catalogUpdated();
     } catch (std::runtime_error &e){
-        cout << e.what() << endl;
+        QMessageBox::critical(nullptr, "Errore", e.what());
     }
 }
 
@@ -129,7 +124,6 @@ void Controller::pathTextChanged()
            mainwindow.showGrid(&catalogo.getFile(path)->getFiles());
         else
            mainwindow.showPlayWindow(catalogo.getFile(path));
-
         mainwindow.selectFileOnTree(path);
     }  catch (std::runtime_error &e) { //il file non esiste resetto la path
         mainwindow.resetTextPath();

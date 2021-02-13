@@ -5,6 +5,7 @@
 
 #include <QVBoxLayout>
 #include <QHBoxLayout>
+#include <QStackedLayout>
 #include <QLayout>
 #include <QSizePolicy> //necessaria per la divisione in percentuale dei widget in un layout
 
@@ -17,6 +18,7 @@
 #include <GridView.h>
 #include <QInputDialog>
 #include <VideoPlayer.h>
+#include <QScrollArea>
 
 #include <BaseNode.h>
 #include <LoadingView.h>
@@ -35,6 +37,7 @@ public:
     void updateTree(const Katalog::BaseNode* root);
     void clearTree();
     void showGrid(const FileList* files);
+    void closeGrid();
     //void showPlayWindow(const FileList& files);
     std::string getTextPath();
     void selectFileOnTree(std::string);
@@ -46,7 +49,10 @@ public slots:
 
 private:
     DeselectableTreeView *catalogView;
-    QWidget *screen;
+    //QWidget *screen;
+    QStackedLayout *stackLayout;
+    GridView *grid;
+    VideoPlayer *player;
     QVBoxLayout *screenLayout;
     QLineEdit *pathEditor;
 

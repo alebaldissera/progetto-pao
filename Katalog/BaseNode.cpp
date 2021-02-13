@@ -4,7 +4,7 @@
 
 using namespace Katalog; //messo per comodità, da rimuovere una volta finito
 
-BaseNode::BaseNode(string _nome, string _path) : name(_nome), path(_path), directoryOpened(false), size(-1), allSize(-1) {}
+BaseNode::BaseNode(string _nome, string _path) : name(_nome), path(_path), directoryOpened(false), size(-1) {}
 
 string BaseNode::getName() const
 {

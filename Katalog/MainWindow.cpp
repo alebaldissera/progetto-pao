@@ -36,14 +36,24 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent), controller(nullptr)
     aux->setLayout(screenLayout);
     screenLayout->setMargin(0);
 
-    //widget fittizio usato solo dal costruttore, viene sostituito a comando dal controller
-    screen = new QWidget(this);
+    stackLayout = new QStackedLayout(this);
+    stackLayout->setMargin(0);
+    stackLayout->setSpacing(0);
     pathEditor = new QLineEdit("/", this);
 
-    /*screen->setSizePolicy(widgetPolicy);
-    pathEditor->setSizePolicy(widgetPolicy);*/
     screenLayout->addWidget(pathEditor);
-    screenLayout->addWidget(screen);
+    screenLayout->addLayout(stackLayout);
+
+    grid = new GridView(nullptr, this);
+    connect(grid, SIGNAL(doubleClickedItem(Katalog::BaseNode*)), this, SLOT(doubleClickOnGridItem(Katalog::BaseNode*)));
+
+
+    stackLayout->addWidget(grid);
+
+    player = new VideoPlayer(static_cast<Katalog::BaseNode*>(nullptr), this);
+    stackLayout->addWidget(player);
+
+    stackLayout->setCurrentIndex(0);
 
     setLayout(mainLayout);
     setMinimumSize(QSize(800, 600));
@@ -71,6 +81,7 @@ void MainWindow::setController(Controller *c)
     connect(this, SIGNAL(fileRemoved(std::string)), controller, SLOT(removeFile(std::string)));
     connect(this, SIGNAL(fileRenamed(std::string,std::string)), controller, SLOT(renameFile(std::string,std::string)));
     connect(pathEditor, SIGNAL(returnPressed()), controller, SLOT(pathTextChanged()));
+    connect(controller, SIGNAL(catalogUpdated()), grid, SLOT(redrawGrid()));
 }
 
 void MainWindow::updateTree(const Katalog::BaseNode *root)
@@ -97,16 +108,9 @@ void MainWindow::clearTree()
 
 void MainWindow::showGrid(const FileList *files)
 {
-    screen->close(); //gridview ha il flag WA_DeleteOnClose impostato a true quindi il widget viene distrutto quando viene chiuso, dunque non è necessaria una delete
-    screenLayout->removeWidget(screen);
-    screen = new GridView(files);
-    QSizePolicy widgetPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    widgetPolicy.setHorizontalStretch(3);
-    screen->setSizePolicy(widgetPolicy);
-    screenLayout->addWidget(screen);
-    connect(screen, SIGNAL(doubleClickedItem(Katalog::BaseNode*)), this, SLOT(doubleClickOnGridItem(Katalog::BaseNode*)));
-    connect(controller, SIGNAL(catalogUpdated()), screen, SLOT(redrawGrid()));
-    static_cast<GridView*>(screen)->redrawGrid();
+    player->setFile(nullptr);
+    stackLayout->setCurrentWidget(grid);
+    grid->setFiles(files);
 }
 
 void MainWindow::selectFileOnTree(std::string path)
@@ -123,24 +127,16 @@ void MainWindow::selectFileOnTree(std::string path)
 
 void MainWindow::showPlayWindow(const Katalog::BaseNode *file)
 {
-    screen->close();
-    screenLayout->removeWidget(screen);
-    screen = new VideoPlayer(file);
-    QSizePolicy widgetPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    widgetPolicy.setHorizontalStretch(3);
-    screen->setSizePolicy(widgetPolicy);
-    screenLayout->addWidget(screen);
+    //grid->setFiles(nullptr);
+    stackLayout->setCurrentWidget(player);
+    player->setFile(file);
 }
 
 void MainWindow::showPlayWindow(const FileList *files)
 {
-    screen->close();
-    screenLayout->removeWidget(screen);
-    screen = new VideoPlayer(files);
-    QSizePolicy widgetPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    widgetPolicy.setHorizontalStretch(3);
-    screen->setSizePolicy(widgetPolicy);
-    screenLayout->addWidget(screen);
+    //grid->setFiles(nullptr);
+    stackLayout->setCurrentWidget(player);
+    player->setFolder(files);
 }
 
 void MainWindow::resetTextPath()
@@ -317,11 +313,11 @@ std::string MainWindow::getItemPath(QTreeWidgetItem *item)
 void MainWindow::addPhoto()
 {
     QStringList sources = QFileDialog::getOpenFileNames(this, tr("Apri foto"), "/home", tr("Immagini (*.png *.jpg)"));
+    std::string destination = getSelectedFilePath();
     if(!sources.empty()) {
         for(auto i = sources.begin(); i != sources.end(); ++i){
             std::string source = i->toStdString();
             std::string filename = getFileName(source);
-            std::string destination = getSelectedFilePath();
             emit addFile(new Katalog::Photo(filename, source), destination);
         }
     }
@@ -330,11 +326,11 @@ void MainWindow::addPhoto()
 void MainWindow::addAudio()
 {
     QStringList sources = QFileDialog::getOpenFileNames(this, tr("Apri foto"), "/home", tr("Audio (*.mp3 *.flac)"));
+    std::string destination = getSelectedFilePath();
     if(!sources.empty()) {
         for(auto i = sources.begin(); i != sources.end(); ++i){
             std::string source = i->toStdString();
             std::string filename = getFileName(source);
-            std::string destination = getSelectedFilePath();
             emit addFile(new Katalog::Audio(filename, source), destination);
         }
     }
@@ -343,11 +339,11 @@ void MainWindow::addAudio()
 void MainWindow::addVideo()
 {
     QStringList sources = QFileDialog::getOpenFileNames(this, tr("Apri foto"), "/home", tr("Immagini (*.mp4 *.avi)"));
+    std::string destination = getSelectedFilePath();
     if(!sources.empty()) {
         for(auto i = sources.begin(); i != sources.end(); ++i){
             std::string source = i->toStdString();
             std::string filename = getFileName(source);
-            std::string destination = getSelectedFilePath();
             emit addFile(new Katalog::Video(filename, source), destination);
         }
     }
@@ -365,7 +361,8 @@ void MainWindow::addDirectory()
 void MainWindow::doubleClickOnGridItem(Katalog::BaseNode *file)
 {
     //update del file selezionato nel treewidget
-    if(!catalogView->selectedItems().empty() && catalogView->selectedItems()[0]->parent()) {
+
+    if(!catalogView->selectedItems().empty()) {
         QTreeWidgetItem *item = catalogView->selectedItems().at(0); //sufficiente perchè si può selezionare un file solo
         bool goToParent = true;
         while(goToParent){
@@ -376,7 +373,7 @@ void MainWindow::doubleClickOnGridItem(Katalog::BaseNode *file)
                     goToParent = false;
                 }
             }
-            if(goToParent) item = item->parent();
+            if(goToParent && item->parent()) item = item->parent();
             else goToParent = false;
         }
     } else { //sto vedendo la root
@@ -391,7 +388,7 @@ void MainWindow::doubleClickOnGridItem(Katalog::BaseNode *file)
         }
     }
 
-    if(file->getFilesCount() > 0 || (dynamic_cast<Katalog::Audio*>(file) == 0 && dynamic_cast<Katalog::Photo*>(file) == 0 && dynamic_cast<Katalog::Video*>(file) == 0))
+    if(file && (file->getFilesCount() > 0 || (dynamic_cast<Katalog::Audio*>(file) == 0 && dynamic_cast<Katalog::Photo*>(file) == 0 && dynamic_cast<Katalog::Video*>(file) == 0)))
         showGrid(&file->getFiles());
     else
         showPlayWindow(file);
