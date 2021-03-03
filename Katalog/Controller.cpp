@@ -7,9 +7,14 @@ Controller::Controller(Katalog::Catalogo &cat, MainWindow &mw, QObject *parent) 
 
     mainwindow.setController(this);
 
-    catalogo = Katalog::IOManager::importCatalogFromFile("Katalog.xml");
-    mainwindow.updateTree(catalogo.getRoot().pointer());
-    mainwindow.showGrid(&catalogo.getRoot()->getFiles());
+    try {
+        catalogo = Katalog::IOManager::importCatalogFromFile("Katalog.xml");
+        mainwindow.updateTree(catalogo.getRoot().pointer());
+        mainwindow.showGrid(&catalogo.getRoot()->getFiles());
+    } catch (std::runtime_error &e) {
+        QMessageBox::critical(nullptr, "Errore", "Errore nel caricamento del catalogo. Formato del file errato.");
+        exit(-1);
+    }
 
     mainwindow.show();
     lv.close();

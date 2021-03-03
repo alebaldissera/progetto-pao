@@ -1,5 +1,4 @@
 #include <Directory.h>
-#include <sstream>
 
 using namespace Katalog;
 
@@ -30,6 +29,7 @@ long Katalog::Directory::getAllSize() const
 std::string Directory::getInfo() const
 {
     std::stringstream s;
+    s << "Nome: " << getName() << std::endl;
     s << "Files: " << getFilesCount() << std::endl << "Size: " << getSize();
     return s.str();
 }

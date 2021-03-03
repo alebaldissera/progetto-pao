@@ -1,5 +1,4 @@
 #include "Catalogo.h"
-#include "BaseNode.h"
 
 using namespace Katalog;
 using namespace std;

@@ -9,7 +9,6 @@ template <class T>
 class vector
 {
 public:
-    //costruttori, distruttori, assegnatori
     vector();
     ~vector();
     vector(const vector &v);
@@ -335,11 +334,6 @@ const T &vector<T>::operator[](const vector::const_iterator i) const
 {
     return *(list + i.offset);
 }
-
-/*template<class T>
-T& vector<T>::operator[](const u_int i) const{
-    return list[i];
-}*/
 
 template<class T>
 void vector<T>::realloc()

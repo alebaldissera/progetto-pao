@@ -1,11 +1,5 @@
 #include "IOManager.h"
 
-//debug stuf
-#include <iostream>
-using std::cout;
-using std::endl;
-//end debug stuff
-
 using namespace Katalog;
 
 void IOManager::exportCatalogToFile(Katalog::Catalogo &catalogo, std::string pathToXmlFile)
@@ -29,9 +23,8 @@ void IOManager::exportCatalogToFile(Katalog::Catalogo &catalogo, std::string pat
     auto files = root->getFiles();
     for(auto i = files.begin(); i != files.end(); i++){
         populateXmlDocument(xml, el, files[i]);
-
-        DocumentRoot.appendChild(el);
     }
+    DocumentRoot.appendChild(el);
 
     QTextStream stream(&xmlFile);
     stream << xml.toString().toUtf8();
@@ -44,11 +37,9 @@ Catalogo IOManager::importCatalogFromFile(std::string pathToXmlFile)
     QFile file(QString::fromStdString(pathToXmlFile));
     QDomDocument xml;
     if(!file.open(QIODevice::ReadOnly | QIODevice::Text))
-        //throw std::runtime_error("Impossibile aprire il file");
         return Catalogo();
     if(!xml.setContent(&file)){
         file.close();
-        //throw std::runtime_error("Impossibile leggere il contenuto del file");
         return Catalogo();
     }
     QDomNode DocumentRoot = xml.namedItem("Katalog");
@@ -68,19 +59,18 @@ Catalogo IOManager::importCatalogFromFile(std::string pathToXmlFile)
                         root->addFile(readNodeInfo(node));
                     }
                 }
-                return root;
-            } else
-                throw std::runtime_error("Formato file errato");
-        } else
-            throw std::runtime_error("Formato file errato");
-    } else
-        throw std::runtime_error("Formato file errato");
+                return Catalogo(root);
+            } else if (fs.isNull()) //se per qualche motivo nel file manca il nodo "FileStructure"
+                return Catalogo();
+        }
+    }
+    throw std::runtime_error("Formato file errato");
 }
 
 void IOManager::populateXmlDocument(QDomDocument &doc, QDomElement &element, NodePtr &node)
 {
     auto files = node->getFiles();
-    QDomElement el = createCreateElement(doc, node); //creo me stesso
+    QDomElement el = createCreateElement(doc, node);
     if(files.size() > 0){
         QDomElement childs = doc.createElement("Childs");
         for(auto i = files.begin(); i != files.end(); i++){

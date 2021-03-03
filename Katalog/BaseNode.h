@@ -12,8 +12,6 @@ typedef unsigned int u_int;
 
 namespace Katalog {
 
-//non si può usare il typedef con un oggetto non acora definito quando viene usato un una classe (a meno di rif e ptr), in questo caso DeepPtr
-
 class BaseNode
 {
 private:

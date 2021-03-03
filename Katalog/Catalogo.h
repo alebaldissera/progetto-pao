@@ -10,10 +10,12 @@ typedef Katalog::vector<std::string> PathList;
 
 namespace Katalog{
 
+/**
+ * @brief Classe che fornisce l'interfaccia al catalogo multimediale
+ */
 class Catalogo
 {
 private:
-    DeepPtr<BaseNode> root;
     /**
      * @brief regex_fun: funzione che permette il controllo del percorso di un file con il metodo della regex
      * @param   string: è il percorso che si vuole esaminare per vedere se esiste o meno
@@ -26,6 +28,8 @@ private:
      * @return puntatore alla directory che conteneva il file eliminato
      */
     DeepPtr<BaseNode> remove_aux(std::string);
+
+    DeepPtr<BaseNode> root;
     bool isModified = false;
     PathList openedNodes;
 
@@ -76,7 +80,6 @@ public:
      * @return true se è avvenuta una modifica ai file, false altrimenti
      */
     bool isChanged();
-
     /**
      * @brief setFileAsOpened: imposta il file come aperto
      * @param path path al file sulla struttura virtuale

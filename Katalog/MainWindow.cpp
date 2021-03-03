@@ -2,12 +2,6 @@
 
 #include <Controller.h>
 
-//debug stuff
-#include <iostream>
-using std::cout;
-using std::endl;
-//end debug stuff
-
 MainWindow::MainWindow(QWidget *parent) : QWidget(parent), controller(nullptr)
 {
     QHBoxLayout *mainLayout = new QHBoxLayout(this);
@@ -15,15 +9,39 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent), controller(nullptr)
     mainLayout->setMargin(5);
     addMenus(mainLayout);
 
-    //tree view per rappresentare la struttura ad albero del catalogo
     catalogView = new DeselectableTreeView(this);
-    QSizePolicy catalogPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    catalogPolicy.setHorizontalStretch(1);
-    catalogView->setSizePolicy(catalogPolicy);
     catalogView->setHeaderHidden(true);
     catalogView->setSelectionMode(QAbstractItemView::SelectionMode::SingleSelection);
     connect(catalogView, SIGNAL(itemSelectionChanged()), this, SLOT(updatePathString()));
-    mainLayout->addWidget(catalogView);
+
+    QPushButton *importButton = new QPushButton("Importa media", this);
+    QMenu *importMenu = new QMenu(importButton);
+
+    QAction *importPhoto = new QAction("Importa foto", importMenu);
+    QAction *importAudio = new QAction("Importa audio", importMenu);
+    QAction *importVideo = new QAction("Importa video", importMenu);
+
+    importMenu->addAction(importPhoto);
+    importMenu->addAction(importAudio);
+    importMenu->addAction(importVideo);
+
+    connect(importPhoto, SIGNAL(triggered(bool)), this, SLOT(addPhoto()));
+    connect(importAudio, SIGNAL(triggered(bool)), this, SLOT(addAudio()));
+    connect(importVideo, SIGNAL(triggered(bool)), this, SLOT(addVideo()));
+
+    importButton->setMenu(importMenu);
+
+    QWidget *treeAux = new QWidget(this);
+    QSizePolicy catalogPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    catalogPolicy.setHorizontalStretch(1);
+    treeAux->setSizePolicy(catalogPolicy);
+
+    QVBoxLayout *leftLayout = new QVBoxLayout(this);
+    leftLayout->setMargin(0);
+    leftLayout->addWidget(catalogView);
+    leftLayout->addWidget(importButton);
+    treeAux->setLayout(leftLayout);
+    mainLayout->addWidget(treeAux);
 
     QWidget *aux = new QWidget(this); //lo uso solo per determinare le proporzioni tra treewidget e seconda parte dello schermo
     QSizePolicy widgetPolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
@@ -39,14 +57,22 @@ MainWindow::MainWindow(QWidget *parent) : QWidget(parent), controller(nullptr)
     stackLayout = new QStackedLayout(this);
     stackLayout->setMargin(0);
     stackLayout->setSpacing(0);
-    pathEditor = new QLineEdit("/", this);
 
-    screenLayout->addWidget(pathEditor);
+    QHBoxLayout *headLayout = new QHBoxLayout(this);
+    headLayout->setMargin(0);
+
+    pathEditor = new QLineEdit("/", this);
+    switchViewButton = new QPushButton("Player", this);
+    connect(switchViewButton, SIGNAL(clicked()), this, SLOT(switchView()));
+
+    headLayout->addWidget(pathEditor);
+    headLayout->addWidget(switchViewButton);
+
+    screenLayout->addLayout(headLayout);
     screenLayout->addLayout(stackLayout);
 
     grid = new GridView(nullptr, this);
     connect(grid, SIGNAL(doubleClickedItem(Katalog::BaseNode*)), this, SLOT(doubleClickOnGridItem(Katalog::BaseNode*)));
-
 
     stackLayout->addWidget(grid);
 
@@ -108,9 +134,11 @@ void MainWindow::clearTree()
 
 void MainWindow::showGrid(const FileList *files)
 {
+    currentView = true;
     player->setFile(nullptr);
     stackLayout->setCurrentWidget(grid);
     grid->setFiles(files);
+    updateSwitchButtonText();
 }
 
 void MainWindow::selectFileOnTree(std::string path)
@@ -127,16 +155,18 @@ void MainWindow::selectFileOnTree(std::string path)
 
 void MainWindow::showPlayWindow(const Katalog::BaseNode *file)
 {
-    //grid->setFiles(nullptr);
-    stackLayout->setCurrentWidget(player);
+    currentView = false;
     player->setFile(file);
+    stackLayout->setCurrentWidget(player);
+    updateSwitchButtonText();
 }
 
 void MainWindow::showPlayWindow(const FileList *files)
 {
-    //grid->setFiles(nullptr);
+    currentView = false;
     stackLayout->setCurrentWidget(player);
     player->setFolder(files);
+    updateSwitchButtonText();
 }
 
 void MainWindow::resetTextPath()
@@ -302,6 +332,11 @@ void MainWindow::setTreeWidgetItemExtras(QTreeWidgetItem *item, Katalog::BaseNod
     item->setToolTip(0, QString::fromStdString(file->getInfo()));
 }
 
+void MainWindow::updateSwitchButtonText()
+{
+    switchViewButton->setText(currentView ? "Player" : "Griglia");
+}
+
 std::string MainWindow::getItemPath(QTreeWidgetItem *item)
 {
     string path = "/" + item->text(0).toStdString();
@@ -312,7 +347,7 @@ std::string MainWindow::getItemPath(QTreeWidgetItem *item)
 
 void MainWindow::addPhoto()
 {
-    QStringList sources = QFileDialog::getOpenFileNames(this, tr("Apri foto"), "/home", tr("Immagini (*.png *.jpg)"));
+    QStringList sources = QFileDialog::getOpenFileNames(this, tr("Importa foto"), "/home", tr("Immagini (*.png *.jpg)"));
     std::string destination = getSelectedFilePath();
     if(!sources.empty()) {
         for(auto i = sources.begin(); i != sources.end(); ++i){
@@ -325,7 +360,7 @@ void MainWindow::addPhoto()
 
 void MainWindow::addAudio()
 {
-    QStringList sources = QFileDialog::getOpenFileNames(this, tr("Apri foto"), "/home", tr("Audio (*.mp3 *.flac)"));
+    QStringList sources = QFileDialog::getOpenFileNames(this, tr("Importa audio"), "/home", tr("Audio (*.mp3 *.flac)"));
     std::string destination = getSelectedFilePath();
     if(!sources.empty()) {
         for(auto i = sources.begin(); i != sources.end(); ++i){
@@ -338,7 +373,7 @@ void MainWindow::addAudio()
 
 void MainWindow::addVideo()
 {
-    QStringList sources = QFileDialog::getOpenFileNames(this, tr("Apri foto"), "/home", tr("Immagini (*.mp4 *.avi)"));
+    QStringList sources = QFileDialog::getOpenFileNames(this, tr("Importa video"), "/home", tr("Immagini (*.mp4 *.avi)"));
     std::string destination = getSelectedFilePath();
     if(!sources.empty()) {
         for(auto i = sources.begin(); i != sources.end(); ++i){
@@ -434,7 +469,14 @@ void MainWindow::rename()
             emit fileRenamed(destination, name);
         }
     }
+}
 
+void MainWindow::switchView()
+{
+    if(currentView)
+        controller->requestForPlayView();
+    else
+        controller->requestForGridView();
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)

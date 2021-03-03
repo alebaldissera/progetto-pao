@@ -1,11 +1,5 @@
 #include "PreviewWindow.h"
 
-//debug stuff
-#include <iostream>
-using std::cout;
-using std::endl;
-//end debut stuff
-
 PreviewWindow::PreviewWindow(Katalog::BaseNode* sel_file, QWidget *parent) : QWidget(parent), defaultColor(QWidget::palette().color(QWidget::backgroundRole())), filePtr(sel_file), il(nullptr)
 {
     QVBoxLayout *mainLayout = new QVBoxLayout(this);

@@ -1,8 +1,6 @@
 #include "BaseNode.h"
-#include "DeepPtr.h"
-#include "Vector.h"
 
-using namespace Katalog; //messo per comodità, da rimuovere una volta finito
+using namespace Katalog;
 
 BaseNode::BaseNode(string _nome, string _path) : name(_nome), path(_path), directoryOpened(false), size(-1) {}
 
@@ -11,7 +9,7 @@ string BaseNode::getName() const
    return name;
 }
 
-string Katalog::BaseNode::getPath() const
+string BaseNode::getPath() const
 {
 	return path;
 }

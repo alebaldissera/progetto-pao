@@ -1,5 +1,5 @@
 /**
-  E' stato utilizzato il layout di questo esempio fornito dal team di Qt:
+  E' stato utilizzato il layout di questo esempio fornito dal team di Qt e per questo motivo sarà considerato come un widget fornito con la libreria:
   https://doc.qt.io/qt-5/qtwidgets-layouts-flowlayout-example.html
   */
 
@@ -11,8 +11,7 @@
 #include <QStyle>
 #include <QLabel>
 /**
- * @brief Il FlowLayout permette di inserire dinamicamente dei QWidget, così da renderizzarli correttamente in una griglia che
- *        può essere espansa o ridotta, in base alla quantità di elementi inseriti.
+ * @brief Layout a griglia responsivo alle dimensioni della finestra, si occupa automaticamente di piazzare tutti i widget inseriti in esso
  */
 class FlowLayout : public QLayout
 {

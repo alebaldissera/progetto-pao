@@ -1,16 +1,13 @@
-/**
-  Soluzione trovata tra le risposte di questo forum:
-  https://www.generacodice.com/en/articolo/899637/Is-it-possible-to-deselect-in-a-QTreeView-by-clicking-off-an-itema=r
-  */
-
 #ifndef DESELECTABLETREEVIEW_H
 #define DESELECTABLETREEVIEW_H
 
 #include <QObject>
-
 #include <QTreeWidget>
 #include <QMouseEvent>
 
+/**
+ * @brief Widget di un QTreeWidget che supporta la deselezione degli elementi
+ */
 class DeselectableTreeView: public QTreeWidget
 {
 Q_OBJECT
@@ -19,9 +16,16 @@ public:
     ~DeselectableTreeView() = default;
 
 signals:
+    /**
+     * @brief itemsDeselected Segnale emesso quando vengono deselezionati tutti gli elementi
+     */
     void itemsDeselected();
 
-private:
+protected:
+    /**
+     * @brief mousePressEvent Definizione delle azioni da intraprendere quando viene premuto il mouse sul widget
+     * @param event
+     */
     virtual void mousePressEvent(QMouseEvent *event);
 };
 

@@ -1,10 +1,3 @@
-/**
-  * Per il widget di riproduzione audio e video e' stato seguito l'esempio fornito da Qt a questo link:
-  * https://doc.qt.io/qt-5/qtmultimedia-multimediawidgets-videowidget-example.html
-  *
-  * L'esempio e' stato modificato per adattarsi al programma ed all'inserimento di altri controlli.
-  */
-
 #ifndef VIDEOPLAYER_H
 #define VIDEOPLAYER_H
 
@@ -24,13 +17,6 @@
 #include "FlowLayout.h"
 #include "PreviewWindow.h"
 #include <QStackedLayout>
-
-/*QT_BEGIN_NAMESPACE
-class QAbstractButton;
-class QSlider;
-class QLabel;
-class QUrl;
-QT_END_NAMESPACE*/
 
 typedef Katalog::vector<Katalog::DeepPtr<Katalog::BaseNode>> FileList;
 
@@ -87,7 +73,6 @@ private:
 
     void buildWidget();
     void addControls(QLayout *l);
-    void setMedia(const Katalog::BaseNode*);
 
 protected:
     void closeEvent(QCloseEvent *event);

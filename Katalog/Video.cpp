@@ -1,7 +1,4 @@
 #include "Video.h"
-#include <QMediaPlayer>
-#include <QMediaMetaData>
-#include <sstream>
 
 Katalog::Video::Video(string _name, string _path): Directory(_name, _path)
 {
@@ -37,6 +34,7 @@ long Katalog::Video::getAllSize() const
 std::string Katalog::Video::getInfo() const
 {
     std::stringstream s;
+    s << "Nome: " << getName() << std::endl;
     s << "Titolo: " << titolo << std::endl;
     s << "Autore: " << autore << std::endl;
     s << "Bitrate: " << bitrate << std::endl;

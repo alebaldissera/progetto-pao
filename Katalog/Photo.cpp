@@ -1,10 +1,4 @@
 #include "Photo.h"
-#include <QImage>
-#include <QMediaMetaData>
-#include <QMediaPlayer>
-#include <sstream>
-
-#include <iostream>
 
 Katalog::Photo::Photo(string _name, string _path): Directory(_name, _path)
 {
@@ -45,6 +39,7 @@ long Katalog::Photo::getAllSize() const
 std::string Katalog::Photo::getInfo() const
 {
     std::stringstream s;
+    s << "Nome: " << getName() << std::endl;
     s << "Risoluzione: " << risoluzione.first << "x" << risoluzione.second << std::endl;
     s << "Camera: " << camera << std::endl;
     s << "Dimensioni: " << size << " byte";

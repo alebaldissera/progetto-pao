@@ -1,6 +1,4 @@
 #include "Audio.h"
-#include <QMediaMetaData>
-#include <sstream>
 
 Katalog::Audio::Audio(string _name, string _path): Directory(_name, _path)
 {
@@ -36,6 +34,7 @@ long Katalog::Audio::getAllSize() const
 std::string Katalog::Audio::getInfo() const
 {
     std::stringstream s;
+    s << "Nome: " << getName() << std::endl;
     s << "Titolo: " << titolo << std::endl;
     s << "Autore: " << autore << std::endl;
     s << "Bitrate: " << bitrate << std::endl;

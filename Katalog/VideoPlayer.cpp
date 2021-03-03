@@ -1,11 +1,5 @@
 #include "VideoPlayer.h"
 
-//debug stuff
-#include <iostream>
-using std::cout;
-using std::endl;
-//end debug stuff
-
 VideoPlayer::VideoPlayer(const Katalog::BaseNode* sel_file, QWidget *parent) : QWidget(parent), files(nullptr), mediaIndex(0)
 {
     buildWidget();
@@ -29,6 +23,8 @@ void VideoPlayer::setFile(const Katalog::BaseNode *file)
 {
     mediaPlayer->stop();
     mediaPlayer->setMedia(QMediaContent());
+    imageLabel->clear();
+
     files = nullptr;
     if(file != nullptr && (dynamic_cast<const Katalog::Photo*>(file) || dynamic_cast<const Katalog::Audio*>(file) || dynamic_cast<const Katalog::Video*>(file))) {
         setMedia(file);
@@ -44,10 +40,12 @@ void VideoPlayer::setFolder(const FileList *filesVector)
 {
     mediaPlayer->stop();
     mediaPlayer->setMedia(QMediaContent());
+    imageLabel->clear();
+
     files = filesVector;
     mediaIndex = 0;
 
-    if(files){
+    if(files && files->size() > 0){
         bool soloCartelle = true;
         for(unsigned int i = 0; i < files->size() && soloCartelle; ++i){
             if(dynamic_cast<Katalog::Photo*>((*files)[i].pointer()) || dynamic_cast<Katalog::Audio*>((*files)[i].pointer()) || dynamic_cast<Katalog::Video*>((*files)[i].pointer())){
@@ -276,27 +274,6 @@ void VideoPlayer::addControls(QLayout *l)
     l->addWidget(sliderVolume);
 }
 
-void VideoPlayer::setMedia(const Katalog::BaseNode* file)
-{
-    errorLabel->setText(QString::fromStdString(file->getName()));
-    if(dynamic_cast<const Katalog::Photo*>(file)){
-        mediaPlayer->setMedia(QMediaContent());
-        view->setCurrentIndex(1);
-        img = QImage(QString::fromStdString(file->getPath()));
-
-        imageView->setPixmap(QPixmap::fromImage(img.scaled(std::min(width(), img.width()), std::min(height(), img.height()))));
-    } else if(dynamic_cast<const Katalog::Audio*>(file)) {
-        view->setCurrentIndex(1);
-        img = QImage(":/Icons/speaker.svg");
-
-        imageView->setPixmap(QPixmap::fromImage(img.scaled(width() / 2, height() / 2, Qt::KeepAspectRatio)));
-        mediaPlayer->setMedia(QUrl::fromLocalFile(QString::fromStdString(file->getPath())));
-    }else {
-        view->setCurrentIndex(0);
-        mediaPlayer->setMedia(QUrl::fromLocalFile(QString::fromStdString(file->getPath())));
-    }
-}
-
 void VideoPlayer::closeEvent(QCloseEvent *event)
 {
     if(mediaPlayer->state() == QMediaPlayer::PlayingState){
@@ -311,7 +288,8 @@ void VideoPlayer::closeEvent(QCloseEvent *event)
 
 void VideoPlayer::resizeEvent(QResizeEvent *event)
 {
-    imageView->setPixmap(QPixmap::fromImage(img.scaled(std::min(width(), img.width()), std::min(height(), img.height()))));
+    if(image)
+        imageView->setPixmap(QPixmap::fromImage(image->scaled(std::min(width(), image->width()), std::min(height(), image->height()))));
     QWidget::resizeEvent(event);
 }
 
