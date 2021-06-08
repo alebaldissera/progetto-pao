@@ -1,0 +1,48 @@
+\section{Descrizione della GUI}
+
+La creazione della GUI è iniziata dalla finestra principale che l'utente vedrà all'avvio del software. Questa è composta da due aree dello schermo divise verticalmente.
+Partendo dal lato destro si trova un widget che mostra la struttura ad albero del catalogo. Questo widget (come viene chiamato dal framework Qt) è stato personalizzato 
+appositamente per poter deselezionare completamente gli elementi premendo in un'area bianca del widget. Per ottenere questo risultato è stata derivata la classe di Qt chiamata
+\emph{QTreeView} ed è stato effettuato un override del metodo che gestisce l'evento di click nel widget stesso. La soluzione è stata ispirata da una discussione trovata in rete e,
+successivamente, personalizzata seguendo le nostre necessità. Inoltre la manipolazine dei file (copia-taglia-incolla) è possibile direttamente da questo widget.
+Al di sotto del \emph{QTreeWidget} si trova un \emph{QPushButton} che permette di importare i file senza passare dal menu File.
+Il lato sinistro dell'interfaccia utente è più complesso. Nella parte superiore è situata una QLineEdit che 
+si occupa di mostrare all'utente la path in cui si trova attualmente, ma ne permette anche l'inserimento manuale per muoversi all'interno del catalogo stesso. 
+A fianco si trova un pulsante che permette di passare direttamente dalla griglia delle anteprime al player.
+Il resto del lato sinistro è composto da una visualizzazione a griglia definita dal widget \emph{GridView} e dal widget \emph{VideoPlayer} che cambiano dinamicamente a seconda 
+del contesto in cui si trova il catalogo; in ogni caso è possibile passare da una visualizzazione ad un'altra usando il menù o delle scorciatoie da tastiera. Il menù principale
+nella parte superiore della finestra contiene tutti i collegamenti alle possibili azioni con relative scorciatoie da tastiera.
+
+\subsection{Visualizzazione a griglia}
+La visualizzazione a griglia (definita in \emph{GridView.h} e implementata in \emph{GridView.cpp}) è composta nel modo seguente:
+\begin{enumerate}
+    \item Un widget QScrollArea che permette di scorrere il contenuto quando questo si estende anche oltre le dimensioni della finestra;
+    \item Un widget fittizio il cui unico scopo è contenere un layout; inserito nella QScrollArea per poter attivare lo scorrimento;
+    \item Un layout FluidLayout cioè una griglia che posiziona dinamicamente gli elementi al suo interno a seconda della dimensione degli elementi e della finestra (è un widget fornito tra gli esempi del framework Qt e quindi considerato come parte di esso);
+    \item I widget personalizzati PreviewWindow che rappresentano le icone degli elementi del catalogo.
+\end{enumerate}
+I widget personalizzati PreviewWindow (definiti in \emph{PreviewWindow.h} e implementati in \emph{PreviewWindow.cpp}) rappresentano le icone dei singoli file e sono composti
+essenzialmete da due QLabel che mostrano l'icona e il nome del file. Nel caso in cui il file che rappresentano sia una foto, mostreranno anche un'anteprima della foto stessa.
+Per farlo si è scelto di usare i QThread per migliorare l'esperienza utente. Infatti il caricamento delle anteprime può diventare molto lento e quindi bloccare il programma.
+Per implementare il caricamento delle anteprime attraverso i QThread si è creato un sottotipo di QThread che implementa il caricamento e il ridimensionamento dell'immagine. 
+Quando il widget PreviewWindow si trova di fronte un'immagine lancerà il thread; nel caso in cui il widget venga rimosso dalla griglia prima che il thread completi il suo lavoro, 
+questo verrà fermato forzatamente e successivamente deallocato. Nella griglia per 
+motivi di tempo non è stata implementata la manipolazione dei file, che rimane comunque possibile attraverso la visualizzazione ad albero.
+
+\subsection{Riproduttore multimediale}
+Il widget VideoPlayer (definito in \emph{VideoPlayer.h} e implementato in \emph{VideoPlayer.cpp}) si occupa di riprodurre tutti i file multimediali ed è composto principalmente 
+da due parti:
+\begin{enumerate}
+    \item Parte superiore che si occupa di dare un feedback grafico sul file in riproduzione ed è composta da:
+    \begin{itemize}
+        \item Una QLabel usata par immagini e file audio (in questo caso mostra un'icona);
+        \item Un QVideoWidget che permette di riprodurre un video;
+    \end{itemize}
+    \item Parte inferiore composta dai controlli del player.
+\end{enumerate}
+I widget della parte superiore sono disposti su un QStakedLayout che permette di sovrappore i widget in "strati" e scegliere quale widget si vuole visualizzare.
+Mentre le immagini vengono visualizzate direttamnte sulla QLabel descritta precedentemente, selezionandone il giusto layer nel layout appena descritto, per video e audio
+la gestione è delegata ad un QMediaPlayer (potrebbe riprodurre anche le immagini ma per un bug causato dai codec si è scelto per una gestione manuale).
+Il QMediaPlayer infine si appoggia al QVideoWidget per mostrare a schermo i video. Si potrebbe far uso di una QPlayList per raccogliere tutti i file multimediali
+e gestirli direttamente dal QMediaPlayer ma come già introdotto i codec su linux quando il file media termina la sua riproduzione renderizzano uno schermo nero, non permettendo 
+di vedere le immagini.

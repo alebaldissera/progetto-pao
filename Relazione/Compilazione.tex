@@ -1,0 +1,27 @@
+\section{Compilazione del codice e testing}
+
+Il software è stato sviluppato e testato utilizzando i seguenti sistemi:
+\begin{itemize}
+    \item Windows 10 Pro, MinGW 7.3, Qt 5.12.10, compilato in 64 bit
+    \item Windows 10 Pro, MSVC2015, Qt 5.12.10, compilato in 64 bit
+    \item ArchLinux 5.10, GCC 10.2, Qt 5.15.2, compilato in 64 bit
+    \item ArchLinux 5.10, CLANG 11, Qt 5.15.2, compilato in 64 bit
+\end{itemize}
+Inoltre sono stati svolti dei test attraverso il software \emph{Valgrind 3.16}, riscontrando memory leak riconducibili al framework Qt.
+Come IDE è stato utilizzato QtCreator 4.13.
+\newline 
+Per compilare su sistemi linux è necessario spostarsi nella cartella contenente i sorgenti e digitare i seguenti comandi:
+\begin{lstlisting}[language=bash]
+    qmake Katalog.pro
+    make
+\end{lstlisting}
+oppure per sistemi multicore, per velocizzare la fase di compilazione anche:
+\begin{lstlisting}[language=bash]
+    qmake Katalog.pro
+    make -j4
+\end{lstlisting}
+dove si può sostiturie il numero \emph{4} con il numero di core del sistema; con il parametro \emph{-j}, make si occuperà automaticamente di 
+distribuire la compilazione su tutti i core disponibili. Infine per eseguire il programma basterà digitare:
+\begin{lstlisting}[language=bash]
+    ./Katalog
+\end{lstlisting}

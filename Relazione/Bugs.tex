@@ -1,0 +1,16 @@
+\section{Bug e problemi conosciuti}
+
+Il software non è esente da bug o problemi di vario tipo. In primis la finestra di caricamento (classe LoadingWindow) non sempre viene renderizzata all'avvio del 
+software. In particolare succede quando il catalogo multimediale inizia a diventare piuttosto grande e il caricamento delle informazioni di tutti i file inizia a diventare oneroso.
+Nella fase di chiusura invece, anche con parecchi file inseriti, non sono stati riscontrati rallentamenti significativi. \newline
+Il secondo problema è stato riscontrato nella fase di importazione di molti file, specialmente se in formati con scarsa compressione. In questo caso il programma si blocca per 
+qualche secondo per poi riprendere il normale funzionamento. Questi due problemi riscontrati sono legati alla lettura dei file che rallenta l'importazione di nuovi file o dell'intero
+catalogo. \newline
+Terzo problema è legato al caricamento delle anteprime della griglia. In questo caso, venendo lanciati un thread separato per anteprima (solo nel caso di immagini),
+vengono caricate in memoria molte immagini che rallenta l'accesso alla memoria di massa richiedendo molti file separati. Questo comporta un'uso eccessivo di memoria nella fase di
+caricamento delle anteprime che potrebbe comportare instabilità del sistema. Questo problema è stato riscontrato testando il software con circa 200 fotografie da circa 10MB l'una.
+La memoria viene comunque liberata correttamente e il thread distrutto appena l'anteprima è caricata. \newline
+Infine cito un bug legato al formato di file utilizzato per salvare il catalogo. Essendo UTF-8 la codifica utilizzata dai file XML, diversa dalla codifica
+del testo del C++, quando si trova di fronte stringhe in cui ci sono dei caratteri speciali (dai nostri test accade con le vocali accentate), l'esportazione e l'importazione 
+del catalogo dal file non permette la lettura corretta di quei caratteri, nonostante il software riesca a gestirli correttamente. Il software comunque non termina, convertendo il 
+file in una cartella (a livello di catalogo) ma nonostante questo tutti i suoi sotto file risulteranno irraggiungibili.

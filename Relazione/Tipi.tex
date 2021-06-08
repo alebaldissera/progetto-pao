@@ -1,0 +1,76 @@
+\section{Descrizione dei tipi}
+
+Tutte le seguenti classi sono state raccolte all'interno di uno spazio
+dei nomi chiamato \emph{Katalog}, questo per tenere separate tutte
+le definizioni dei tipi da eventuali conflitti di nomi. L'accesso 
+a queste classi avviene tramite l'apertura dello spazio dei nomi attraverso
+l'istruzione:
+\begin{lstlisting}[language=C++]
+    using namespace Katalog;
+\end{lstlisting}
+Oppure attraverso l'apertura di una parte del namespace con l'istruzione:
+\begin{lstlisting}[language=C++]
+    using Katalog::DeepPtr;
+\end{lstlisting}
+Oppure utilizzando l'operatore di scoping ogni volta che si vuole accedere
+ad una definizione interna al namespace.
+
+\subsection{Class \emph{Vector}}
+
+La classe \emph{Vector} rappresenta un array a dimensione variabile che
+gestisce automaticamente la memoria, riallocando quando necessario
+l'array di dati e copiando di conseguenza tutti i valori dall'array
+più piccolo a quello più grande. In particolare \emph{Vector} è definito
+come un template di classe che permette di riutilizzare lo stesso codice
+per qualsiasi tipo di dati. La definizione e l'implementazione di questa 
+classe si trova in un unico file, essendo un template, chiamato Vector.h.
+
+\subsection{Class \emph{DeepPtr}}
+
+La classe \emph{DeepPtr} rappresenta un puntatore ad oggetti polimorfi
+con gestione automatica della memoria tramite il contratto standard
+\emph{clone()} delle classi polimorfe. Anche questo tipo è definito come
+un template, permettendo il suo utilizzo con qualsiasi gerarchia polimorfa
+che supporta il metodo \emph{clone()}. Come per la classe precedente, anche 
+questa è definita ed implementata in un unico file chiamato DeepPtr.h
+
+\subsection{Classe \emph{BaseNode}}
+
+La classe \emph{BaseNode} è una classe virtuale astratta: ciò significa 
+che mancano le implementazioni di alcuni metodi virtuali e per questo 
+non è istanziabile. Questa rappresenta la base di tutta la gerarchia di
+tipi su cui si basa il progetto. \emph{BaseNode} implementa alcune
+caratteristiche comuni a tutte le classi derivate come la gestione del nome
+virtuale, la gestione della path sul file system e la gestione dei sotto-file.
+Il metodo virtuale puro \emph{clone()} si occupa di copiare l'oggetto
+ogni volta che è necessario. La gestione della memoria è lasciata all'oggetto
+\emph{DeepPtr} visto precedentemente. Gli altri metodi virtuali puri saranno 
+discussi separatamente per ogni classe. Questa classe è definita nel file BaseNode.h ed è implementata nel file BaseNode.cpp.
+L'attributo directoryOpened indica se sono visibili i sotto-file ed è solamente usata dalla GUI.
+
+\subsection{Classe \emph{Directory}}
+
+La classe \emph{Directory}, derivata da \emph{BaseNode}, definisce il comportamento di una cartella virtuale,
+definita dal nome e dai file in essa contenuti. I metodi \emph{getSize()} e \emph{getAllSize()}
+si comportano allo stesso modo e ritornano la dimensione di tutti gli elementi contenuti nella cartella virtuale.
+L'attributo path definito in \emph{BaseNode} è sempre nullo e non viene preso in considerzione. 
+Il metodo \emph{getInfo()} ritorna una stringa formattata contenente il numero di file contenuti e la dimensione totale.
+
+\subsection{Classi \emph{Photo}, \emph{Audio} e \emph{Video}}
+
+Queste classi, derivate da \emph{Directory}, si occupano di rappresentare rispettivamente immagini, file audio e video.
+Le classi contengono alcuni attributi specifici per ogni file, usati per dare informazioni all'utente sul file attraverso il metodo \emph{getInfo()}.
+In queste classi l'attributo path indica il percorso fisico nel file system per raggiungere il file. 
+Il metodo \emph{getSize()} ritorna la dimensione del file che rappresenta, mentre il metodo \emph{getAllSize()}
+ritorna la dimensione del file sommata alla dimensione di tutti i file contenuti all'interno di esso.
+
+\subsection{Classe \emph{Catalogo}}
+
+La classe \emph{Catalogo} rappresenta l'interfaccia del modello dell'applicazione.
+Essa è composta dalla radice della struttura dei file (istanziata come una \emph{Directory} senza nome), 
+e da un attributo di tipo bool che indica se la struttura ha subito delle modifiche.
+L'interfaccia pubblica di questa classe offre tutto il necessario per manipolare la struttura dei file
+contenuta nel catalogo, nascondendo completamente il comportamento della gerarchia dall'esterno.
+A livello di \emph{Catalogo} tutti i file sono identificati da una path virtuale rappresentata su una stringa
+e costruita concatenando i nomi dei file a cui bisogna accedere per arrivare a quello interessato, separandoli da uno /.
+Per elaborare la path virtuale si usano le regex o espressioni regolari che si occupano di fare tutti i controlli di validità dei nomi dei file e separare i vari elementi compresi tra due /.

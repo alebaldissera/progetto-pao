@@ -1,14 +1,50 @@
-\documentclass[12pt, letterpaper]{article}
+\documentclass[11pt, letterpaper]{article}
 \usepackage[utf8]{inputenc}
+\usepackage[margin=1in]{geometry}
+\usepackage{listings}
+\renewcommand{\contentsname}{Indice}
 
-\title{Progetto Programmazione ad oggetti}
-\author{Alessandro Baldissera}
+\title{\textbf{Progetto Programmazione ad oggetti \\ Sviluppo del software Katalog}}
+\author{Alessandro Baldissera Mat:1216742 \\ Sviluppo in coppia con Nicolas Alberti Mat:1224454}
 \date{Anno Accademico 2020/2021}
 
 \begin{document}
 \maketitle
 
+\begin{abstract}
+    Si vuole creare un software che permetta di catalogare e riprodurre
+    dei file multimediali, in particolare foto, video e file audio.
+    L'organizzazione dei file deve avvenire tramite una struttura gerarchica 
+    simile a quella di un file-system.
+    La struttura si compone di quattro componenti: cartelle, foto, audio e video.
+    In particolare foto, audio e video sono a loro volta delle cartelle e 
+    quindi possono contenere dei file.
+    L'utente potrà navigare nella struttura attraverso una visualizzazione a griglia
+    e attraverso una visualizzazione dell'albero. Inoltre dovrà poter riprodurre
+    i file multimediali che inserisce nel catalogo. Il salvataggio del catalogo
+    deve essere del tutto trasparente all'utente e avvenire in automatico alla
+    chiusura del software ma l'utente dovrà avere la possibilità di salvare manualmente
+    in qualsiasi momento.
+\end{abstract}
 
+\tableofcontents{}
+\newpage
+
+\input{Tipi.tex}
+
+\input{Chiamate.tex}
+
+\input{Formati.tex}
+
+\input{Grafica.tex}
+
+\input{Compilazione.tex}
+
+\input{Tempistiche.tex}
+
+\input{Divisione.tex}
+
+\input{Bugs.tex}
 
 \end{document}
 

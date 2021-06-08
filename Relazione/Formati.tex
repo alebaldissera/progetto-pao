@@ -1,0 +1,28 @@
+\section{Descrizione del formato dei file}
+
+Per salvare la struttura del catalogo sul file è stato scelto il formato XML.
+Questo perchè XML usa una struttura gerarchica come quella di file e cartelle. 
+I dati sono rappresentati da "TAG" che sono stati usati per differenziare 
+il tipo di dato da rappresentare e gli "attributi" per descrivere proprietà dei dati.
+In particolare il TAG \emph{Katalog} è usato per aprire il documento, in quanto tutti i file XML necessitano di un tag di apertura (e rispettivamente di chiusura).
+All'interno di questo TAG sono rappresentati tutti i dati del catalogo. 
+Nella struttura del file è previsto un TAG chiamato "KatalogVersion" che è stato inserito appositamente 
+per il versionamento del salvataggio, permettendo di distinguere facilmente il formato specifico 
+della struttura XML nel caso nelle future versioni del software questa debbba essere cambiata. 
+Il TAG "FileStructure" contiene le informazioni per ricreare l'intero catalogo. Al suo interno a sua volta si possono 
+trovare i tag "KFile" e "KDirectory". I due tag hanno degli attributi:
+\begin{itemize}
+    \item "Name" che indica il nome del file/cartella sul catalogo;
+    \item "PathToDisk" che indica la path del file specifico su disco ed è disponibile solo per i TAG "KFile" altrimenti verrà ignorato;
+    \item "FileType" che indica il tipo di file ed è disponibile solo per i TAG "KFile" altrimenti verrà ingnorato;
+    \item "IsOpen" che indica se nell'ultima sessione di utilizzo del catalogo è stata visualizzata la lista dei sottofile.
+\end{itemize}
+Infine all'interno di "KFile" e "KDirectory" si può trovare un TAG chiamato "Childs" che a sua volta conterrà di "KFile" o "KDirectory" ed è usato per 
+indicare i sotto-file. Si è scelto di non inserire i sotto-file direttamnte all'interno del tag
+del file o directory per semplificare un'eventuale aggiunta di altre informazioni relative all'oggetto rappresentato. 
+La gestione della lettura e scrittura del file XML rappresentante i dati del catalogo, avviene tramite la classe \emph{Katalog::IOManager} che non necessita di essere istanziata per 
+poter essere usata. Questa infatti espone due metodi pubblici statici che si occupano di leggere e scrivere il file; rispettivamente chiamati \emph{importCatalogFromFile} e \emph{exportCatalogToFile}.
+Il metodo di lettura del file accetta come parametro una stringa (\emph{std::string}) che indica la path su disco del file da leggere. A partire dalla path, aprirà il file e 
+ne interpreterà il contenuto ritornando l'intero catalogo già costruito e popolato. Il metodo di scrittura del file invece accetta come parametri il catalogo (\emph{Katalog::Catalogo}) e 
+la una string (\emph{std::string}) che indica la path su disco, dove salvare il file. Questo metodo si occuperà di leggere tutta la struttura del catalogo e di scrivere il file nel formato corretto.
+Per semplicità è stato sfruttato il supporto nativo del framework Qt per leggere e scrivere i file XML.

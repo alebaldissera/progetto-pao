@@ -1,0 +1,8 @@
+\section{Descrizione delle chiamate polimorfe}
+
+La gerarchia, come già visto nella descrizione dei tipi, fa uso dei metodi virtuali e quindi delle chiamate polimorfe. L'uso di queste chiamate è stato 
+sfruttato principalmente per fornire delle informazioni specifiche per ogni tipo della gerarchia all'utente o per differenziare il comportamento di un metodo a seconda del tipo usato. 
+I metodi virtuali puri \emph{getSize()} e \emph{getAllSize()} sono stati specializzati per ogni sottotipo della gerarchia. Nel tipo \emph{Katalog::Directory} 
+restituiscono entrambi lo stesso risultato, mentre per i sottotipi di quest'ultimo restituiscono rispettivamente la dimensione del file e la dimensione del file sommata alla dimensione
+di tutti gli elementi contenuti in esso (in modo ricorsivo). Il metodo \emph{getInfo()} permette di restituire all'utente delle informazioni specifiche per ogni tipo della gerarchia;
+in effetti queste informazioni vengono poi usate per arricchire l'interfaccia utente.
